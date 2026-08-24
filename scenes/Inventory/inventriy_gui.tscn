@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://dx6u5b7tmvs3r"]
+
+[ext_resource type="Texture2D" uid="uid://bwvemvdma1fa5" path="res://Imagens/Inventario/InventoryRect.png" id="1_7fkg1"]
+[ext_resource type="Script" uid="uid://peciyowbt2qc" path="res://Scripts/inventário.gd" id="1_t3eg3"]
+[ext_resource type="PackedScene" uid="uid://cj5ln4pleluls" path="res://Cenas/slotGUI.tscn" id="2_hj0v8"]
+
+[node name="Inventário" type="Control" unique_id=757588118]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -54.0
+offset_top = -83.0
+offset_right = 54.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("1_t3eg3")
+
+[node name="Grade" type="NinePatchRect" parent="." unique_id=518388704]
+layout_mode = 0
+offset_right = 108.0
+offset_bottom = 83.0
+texture = ExtResource("1_7fkg1")
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+
+[node name="slot" parent="Grade" unique_id=1177580710 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 7.0
+offset_bottom = 7.0
+
+[node name="slot2" parent="Grade" unique_id=1574590592 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 8.0
+offset_right = 32.0
+offset_bottom = 8.0
+
+[node name="slot3" parent="Grade" unique_id=1639944973 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 8.0
+offset_right = 56.0
+offset_bottom = 8.0
+
+[node name="slot4" parent="Grade" unique_id=1978147499 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 8.0
+offset_right = 80.0
+offset_bottom = 8.0
+
+[node name="slot5" parent="Grade" unique_id=217199613 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 32.0
+offset_right = 8.0
+offset_bottom = 32.0
+
+[node name="slot6" parent="Grade" unique_id=446869170 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 32.0
+offset_bottom = 32.0
+
+[node name="slot7" parent="Grade" unique_id=490242313 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 32.0
+offset_right = 56.0
+offset_bottom = 32.0
+
+[node name="slot8" parent="Grade" unique_id=1201432545 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 32.0
+offset_right = 80.0
+offset_bottom = 32.0
+
+[node name="slot9" parent="Grade" unique_id=578933565 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 56.0
+offset_right = 8.0
+offset_bottom = 56.0
+
+[node name="slot10" parent="Grade" unique_id=1704841339 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 56.0
+offset_right = 32.0
+offset_bottom = 56.0
+
+[node name="slot11" parent="Grade" unique_id=148440504 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 56.0
+offset_right = 56.0
+offset_bottom = 56.0
+
+[node name="slot12" parent="Grade" unique_id=769368028 instance=ExtResource("2_hj0v8")]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 56.0
+offset_right = 80.0
+offset_bottom = 56.0

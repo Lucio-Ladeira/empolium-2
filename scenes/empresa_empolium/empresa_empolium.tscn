@@ -1,7 +1,9 @@
 [gd_scene format=4 uid="uid://dpcnowfd7ly38"]
 
+[ext_resource type="Script" uid="uid://c1u1ba8o7fcjx" path="res://scripts/empresa_empolium.gd" id="1_dena5"]
 [ext_resource type="Texture2D" uid="uid://cabrpgfkjnfk5" path="res://assets/General list.png" id="1_q8b2f"]
 [ext_resource type="PackedScene" uid="uid://co75pskxmrpau" path="res://scenes/plyer/player.tscn" id="2_o6gfb"]
+[ext_resource type="PackedScene" uid="uid://dx6u5b7tmvs3r" path="res://scenes/Inventory/inventriy_gui.tscn" id="4_ngc45"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o6gfb"]
 texture = ExtResource("1_q8b2f")
@@ -35,6 +37,7 @@ sources/0 = SubResource("TileSetAtlasSource_rv6wk")
 [node name="EmpresaEmpolium" type="Node2D" unique_id=307392628]
 z_as_relative = false
 y_sort_enabled = true
+script = ExtResource("1_dena5")
 
 [node name="tile_ground" type="TileMapLayer" parent="." unique_id=959069859]
 tile_map_data = PackedByteArray("AAAPAP3/AAAAAAwAAAAPAP7/AAAAAAwAAAAPAP//AAAAAAwAAAAPAAAAAAAAAAwAAAAPAAEAAAAAAAwAAAAQAP3/AAAAAAwAAAAQAP7/AAAAAAwAAAAQAP//AAAAAAwAAAAQAAAAAAAAAAwAAAAQAAEAAAAAAAwAAAARAP3/AAAAAAwAAAARAP7/AAAAAAwAAAARAP//AAAAAAwAAAARAAAAAAAAAAwAAAARAAEAAAAAAAwAAAASAP3/AAAAAAwAAAASAP7/AAAAAAwAAAASAP//AAAAAAwAAAASAAAAAAAAAAwAAAASAAEAAAAAAAwAAAATAP3/AAAAAAwAAAATAP7/AAAAAAwAAAATAP//AAAAAAwAAAATAAAAAAAAAAwAAAATAAEAAAAAAAwAAAAPAAIAAAAAAAwAAAAPAAMAAAAAAAwAAAAPAAQAAAAAAAwAAAAQAAIAAAAAAAwAAAAQAAMAAAAAAAwAAAAQAAQAAAAAAAwAAAARAAIAAAAAAAwAAAARAAMAAAAAAAwAAAARAAQAAAAAAAwAAAASAAIAAAAAAAwAAAASAAMAAAAAAAwAAAASAAQAAAAAAAwAAAATAAIAAAAAAAwAAAATAAMAAAAAAAwAAAATAAQAAAAAAAwAAAAUAP3/AAAAAAwAAAAUAP7/AAAAAAwAAAAUAP//AAAAAAwAAAAUAAAAAAAAAAwAAAAUAAEAAAAAAAwAAAAUAAIAAAAAAAwAAAAUAAMAAAAAAAwAAAAUAAQAAAAAAAwAAAAVAP3/AAAAAAwAAAAVAP7/AAAAAAwAAAAVAP//AAAAAAwAAAAVAAAAAAAAAAwAAAAVAAEAAAAAAAwAAAAVAAIAAAAAAAwAAAAVAAMAAAAAAAwAAAAVAAQAAAAAAAwAAAAWAP3/AAAAAAwAAAAWAP7/AAAAAAwAAAAWAP//AAAAAAwAAAAWAAAAAAAAAAwAAAAWAAEAAAAAAAwAAAAWAAIAAAAAAAwAAAAWAAMAAAAAAAwAAAAWAAQAAAAAAAwAAAA=")
@@ -48,3 +51,11 @@ tile_set = SubResource("TileSet_iamw4")
 [node name="player" parent="." unique_id=1247319694 instance=ExtResource("2_o6gfb")]
 z_index = 1
 position = Vector2(308, 138)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=994049601]
+process_mode = 3
+
+[node name="Inventário" parent="CanvasLayer" unique_id=757588118 instance=ExtResource("4_ngc45")]
+
+[connection signal="aberto" from="CanvasLayer/Inventário" to="." method="_on_inventário_aberto"]
+[connection signal="fechado" from="CanvasLayer/Inventário" to="." method="_on_inventário_fechado"]
