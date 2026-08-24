@@ -11,7 +11,6 @@ config_version=5
 [application]
 
 config/name="EMPOLIUM2"
-run/main_scene="uid://dpcnowfd7ly38"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
 
@@ -19,6 +18,8 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=640
 window/size/viewport_height=320
+window/size/window_width_override=1366
+window/size/window_height_override=768
 window/stretch/mode="canvas_items"
 
 [input]
@@ -54,6 +55,7 @@ move_down={
 
 [layer_names]
 
+2d_physics/layer_1="ground"
 2d_physics/layer_8="player"
 
 [physics]

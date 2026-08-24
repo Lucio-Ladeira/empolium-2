@@ -4,8 +4,8 @@
 [ext_resource type="Script" uid="uid://dk5umr6xres11" path="res://scenes/plyer/player.gd" id="1_lda7p"]
 [ext_resource type="Texture2D" uid="uid://dc61ioumh47mi" path="res://assets/Character_movement.png" id="2_lda7p"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_dxib6"]
-size = Vector2(16, 7)
+[sub_resource type="CircleShape2D" id="CircleShape2D_o6gfb"]
+radius = 7.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fb3pg"]
 atlas = ExtResource("1_hacnt")
@@ -182,7 +182,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_niij6")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle_animation_back",
 "speed": 5.0
 }, {
@@ -199,7 +199,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_cmury")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle_animation_front",
 "speed": 5.0
 }, {
@@ -216,7 +216,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_y3hgx")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle_animation_left",
 "speed": 5.0
 }, {
@@ -233,7 +233,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_hn4dv")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle_animation_right",
 "speed": 5.0
 }, {
@@ -256,7 +256,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_5qk8l")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk_animation_east",
 "speed": 10.0
 }, {
@@ -279,7 +279,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ao2aq")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk_animation_north",
 "speed": 10.0
 }, {
@@ -302,7 +302,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_w1ilv")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk_animation_south",
 "speed": 10.0
 }, {
@@ -325,7 +325,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_nexs7")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk_animation_west",
 "speed": 10.0
 }]
@@ -334,11 +334,16 @@ animations = [{
 script = ExtResource("1_lda7p")
 
 [node name="player_colision" type="CollisionShape2D" parent="." unique_id=1567183861]
-position = Vector2(0, 12.5)
-shape = SubResource("RectangleShape2D_dxib6")
+position = Vector2(-1, 12)
+shape = SubResource("CircleShape2D_o6gfb")
 
 [node name="player_animation" type="AnimatedSprite2D" parent="." unique_id=518222585]
 position = Vector2(0, -2)
 sprite_frames = SubResource("SpriteFrames_6kt1v")
 animation = &"idle_animation_left"
 autoplay = "idle_animation_front"
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=719952462]
+zoom = Vector2(1.5, 1.5)
+position_smoothing_enabled = true
+rotation_smoothing_enabled = true
