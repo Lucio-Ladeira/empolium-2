@@ -11,7 +11,8 @@ config_version=5
 [application]
 
 config/name="EMPOLIUM2"
-config/features=PackedStringArray("4.6", "Mobile")
+run/main_scene="uid://dpcnowfd7ly38"
+config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
 
 [display]
