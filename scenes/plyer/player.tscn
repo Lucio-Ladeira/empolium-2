@@ -3,6 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://chsdk36ctds5b" path="res://assets/Character_idle.png" id="1_hacnt"]
 [ext_resource type="Script" uid="uid://dk5umr6xres11" path="res://scenes/plyer/player.gd" id="1_lda7p"]
 [ext_resource type="Texture2D" uid="uid://dc61ioumh47mi" path="res://assets/Character_movement.png" id="2_lda7p"]
+[ext_resource type="Shader" uid="uid://dpl3ejku2hsfa" path="res://shader/player.gdshader" id="4_dxib6"]
+[ext_resource type="Shader" uid="uid://db2goyjnx1obm" path="res://scenes/plyer/player.gdshader" id="5_fb3pg"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_o6gfb"]
 radius = 7.0
@@ -330,6 +332,16 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o72fr"]
+shader = ExtResource("4_dxib6")
+shader_parameter/silhouette_color = Color(0, 0, 0, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fb3pg"]
+shader = ExtResource("5_fb3pg")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_27mt5"]
+viewport_path = NodePath("SubViewport")
+
 [node name="player" type="CharacterBody2D" unique_id=1247319694]
 script = ExtResource("1_lda7p")
 
@@ -340,10 +352,34 @@ shape = SubResource("CircleShape2D_o6gfb")
 [node name="player_animation" type="AnimatedSprite2D" parent="." unique_id=518222585]
 position = Vector2(0, -2)
 sprite_frames = SubResource("SpriteFrames_6kt1v")
-animation = &"idle_animation_left"
+animation = &"idle_animation_right"
 autoplay = "idle_animation_front"
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=719952462]
 zoom = Vector2(1.5, 1.5)
 position_smoothing_enabled = true
 rotation_smoothing_enabled = true
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=1812609832]
+transparent_bg = true
+size = Vector2i(32, 32)
+render_target_update_mode = 4
+
+[node name="player_view" type="AnimatedSprite2D" parent="SubViewport" unique_id=302938939]
+material = SubResource("ShaderMaterial_o72fr")
+position = Vector2(16, 14)
+sprite_frames = SubResource("SpriteFrames_6kt1v")
+animation = &"idle_animation_right"
+autoplay = "idle_animation_front"
+
+[node name="player_mask" type="Sprite2D" parent="." unique_id=1039783434]
+material = SubResource("ShaderMaterial_fb3pg")
+texture = SubResource("ViewportTexture_27mt5")
+
+[node name="silhouette" type="AnimatedSprite2D" parent="." unique_id=683113978]
+z_index = 10
+material = SubResource("ShaderMaterial_o72fr")
+position = Vector2(4.7683716e-07, -2.0000005)
+sprite_frames = SubResource("SpriteFrames_6kt1v")
+animation = &"idle_animation_right"
+autoplay = "idle_animation_front"
