@@ -2,13 +2,14 @@
 
 [ext_resource type="Script" uid="uid://dk5umr6xres11" path="res://scenes/plyer/player.gd" id="1_lda7p"]
 [ext_resource type="Texture2D" uid="uid://dxrlrkslfhkhd" path="res://assets/Character_all_animations.png" id="2_hacnt"]
+[ext_resource type="Texture2D" uid="uid://dmi87wvpp38y1" path="res://assets/luz/lpc_shadow.png" id="2_lda7p"]
 
 [sub_resource type="Animation" id="Animation_hacnt"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Idle:frame")
+tracks/0/path = NodePath("sprites:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -38,7 +39,7 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Idle:frame")
+tracks/0/path = NodePath("sprites:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -68,7 +69,7 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Idle:frame")
+tracks/0/path = NodePath("sprites:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -98,7 +99,7 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Idle:frame")
+tracks/0/path = NodePath("sprites:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -128,7 +129,7 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Idle:frame")
+tracks/0/path = NodePath("sprites:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -158,7 +159,7 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Idle:frame")
+tracks/0/path = NodePath("sprites:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -188,7 +189,7 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Idle:frame")
+tracks/0/path = NodePath("sprites:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -218,7 +219,7 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Idle:frame")
+tracks/0/path = NodePath("sprites:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -248,7 +249,7 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Idle:frame")
+tracks/0/path = NodePath("sprites:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -359,7 +360,13 @@ radius = 6.0
 [node name="player_base" type="CharacterBody2D" unique_id=1247319694]
 script = ExtResource("1_lda7p")
 
-[node name="Idle" type="Sprite2D" parent="." unique_id=2030719960]
+[node name="shadow" type="Sprite2D" parent="." unique_id=1791763576]
+modulate = Color(0, 0, 0, 0.32156864)
+position = Vector2(-1.1920929e-07, 14.5)
+scale = Vector2(0.625, 0.59374994)
+texture = ExtResource("2_lda7p")
+
+[node name="sprites" type="Sprite2D" parent="." unique_id=2030719960]
 texture = ExtResource("2_hacnt")
 hframes = 8
 vframes = 10
