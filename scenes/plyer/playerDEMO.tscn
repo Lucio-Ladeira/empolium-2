@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://bhon5fcs2tv0i"]
+
+[ext_resource type="PackedScene" uid="uid://co75pskxmrpau" path="res://scenes/plyer/player.tscn" id="1_qmuw7"]
+
+[node name="playerDEMO" unique_id=1247319694 instance=ExtResource("1_qmuw7")]

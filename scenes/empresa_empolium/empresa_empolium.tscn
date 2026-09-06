@@ -47,4 +47,5 @@ tile_set = SubResource("TileSet_iamw4")
 
 [node name="player" parent="." unique_id=1247319694 instance=ExtResource("2_o6gfb")]
 z_index = 1
-position = Vector2(308, 138)
+position = Vector2(304, 132)
+collision_layer = 128
