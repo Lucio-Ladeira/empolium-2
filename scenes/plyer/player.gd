@@ -3,15 +3,14 @@ extends CharacterBody2D
 @export var speed := 100.0
 @export var dash_speed := 250.0
 @export var dash_duration := 0.15
+@export var estamina := 300
 @onready var dash_timer: Timer = $dash_timer
-
-
 @onready var anim_tree: AnimationTree = $AnimationTree
 @onready var anim_state = anim_tree.get("parameters/playback")
 
 var current_state = player_state.MOVE
 var last_direction := Vector2.DOWN
-var pode_dash = true
+
 enum player_state {
 	MOVE,
 	DASH
@@ -20,7 +19,7 @@ enum player_state {
 func _ready() -> void:
 	dash_timer.start()
 func _physics_process(_delta):
-	print(pode_dash)
+	print(estamina)
 	match current_state:
 			
 		player_state.MOVE:
@@ -47,9 +46,9 @@ func move():
 		anim_state.travel("idle")
 		velocity = Vector2.ZERO
 	#dash
-	if Input.is_action_just_pressed("dash") and pode_dash:
+	if Input.is_action_just_pressed("dash") and estamina >= 100:
+		estamina -= 100
 		dash_timer.start()
-		pode_dash = false
 		current_state = player_state.DASH
 		velocity = last_direction * dash_speed
 		return
@@ -69,4 +68,5 @@ func animation_state(direction):
 
 
 func _on_timer_timeout() -> void:
-	pode_dash = true
+	if estamina < 300:
+		estamina += 100
