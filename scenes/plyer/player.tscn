@@ -395,6 +395,19 @@ zoom = Vector2(1.5, 1.5)
 position_smoothing_enabled = true
 rotation_smoothing_enabled = true
 
-[node name="dash_timer" type="Timer" parent="." unique_id=1837932115]
+[node name="estamina_timer" type="Timer" parent="." unique_id=1837932115]
 
-[connection signal="timeout" from="dash_timer" to="." method="_on_timer_timeout"]
+[node name="dashtimer" type="Timer" parent="." unique_id=34513896]
+wait_time = 0.5
+one_shot = true
+
+[node name="Label" type="Label" parent="." unique_id=1241413050]
+z_index = 6
+offset_left = -20.0
+offset_top = -33.0
+offset_right = 20.0
+offset_bottom = -10.0
+text = "p"
+
+[connection signal="timeout" from="estamina_timer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="dashtimer" to="." method="_on_dashtimer_timeout"]
