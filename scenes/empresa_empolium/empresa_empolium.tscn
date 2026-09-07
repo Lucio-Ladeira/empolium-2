@@ -18,6 +18,9 @@ tile_size = Vector2i(32, 16)
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_o6gfb")
 
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_dena5"]
+polygon = PackedVector2Array(-0.5076275, -16.041037, 16.853241, -24.467657, 0.81220436, -32.79275, -17.462395, -23.960028)
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rv6wk"]
 texture = ExtResource("1_q8b2f")
 texture_region_size = Vector2i(32, 32)
@@ -25,18 +28,16 @@ texture_region_size = Vector2i(32, 32)
 7:10/0 = 0
 7:10/0/z_index = 1
 7:10/0/y_sort_origin = 16
+7:10/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_dena5")
 7:10/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, 16, -16, 24, 0, 32, 16, 24)
 
 [sub_resource type="TileSet" id="TileSet_iamw4"]
 tile_shape = 1
 tile_layout = 5
 tile_size = Vector2i(32, 16)
+occlusion_layer_0/light_mask = 1
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_rv6wk")
-
-[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_rv6wk"]
-closed = false
-polygon = PackedVector2Array(304, 168, 432, 104, 336, 56, 416, 16, 400, 8, 416, 0, 384, -16, 400, -24, 368, -40, 320, -16, 304, -24, 368, -56, 320, -80, 304, -72, 272, -88, 256, -80, 240, -88, 208, -72, 192, -80, 144, -56, 160, -48, 128, -32, 144, -24, 128, -16, 144, -8, 128, 0, 144, 8, 128, 16, 144, 24, 128, 32, 144, 40, 240, -8, 256, 0, 144, 56, 176, 72, 160, 80, 192, 96, 176, 104)
 
 [node name="EmpresaEmpolium" type="Node2D" unique_id=307392628]
 z_as_relative = false
@@ -69,6 +70,3 @@ shadow_color = Color(0, 0, 0, 1)
 shadow_filter = 1
 texture = ExtResource("3_rv6wk")
 texture_scale = 1.4
-
-[node name="LightOccluder2D" type="LightOccluder2D" parent="." unique_id=341683774]
-occluder = SubResource("OccluderPolygon2D_rv6wk")
