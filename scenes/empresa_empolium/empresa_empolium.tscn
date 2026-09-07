@@ -70,3 +70,6 @@ shadow_color = Color(0, 0, 0, 1)
 shadow_filter = 1
 texture = ExtResource("3_rv6wk")
 texture_scale = 1.4
+
+[node name="DirectionalLight2D" type="DirectionalLight2D" parent="." unique_id=1239537104]
+color = Color(0.08685193, 0.0039056812, 0.08480906, 1)

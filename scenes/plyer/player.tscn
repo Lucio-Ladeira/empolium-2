@@ -358,10 +358,14 @@ graph_offset = Vector2(137, -16)
 radius = 6.0
 
 [node name="player_base" type="CharacterBody2D" unique_id=1247319694]
+z_as_relative = false
+y_sort_enabled = true
 script = ExtResource("1_lda7p")
 
 [node name="shadow" type="Sprite2D" parent="." unique_id=1791763576]
 modulate = Color(0, 0, 0, 0.32156864)
+z_as_relative = false
+y_sort_enabled = true
 position = Vector2(-1.1920929e-07, 14.5)
 scale = Vector2(0.625, 0.59374994)
 texture = ExtResource("2_lda7p")
