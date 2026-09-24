@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://co75pskxmrpau" path="res://scenes/plyer/player.tscn" id="2_o6gfb"]
 [ext_resource type="Texture2D" uid="uid://bgmxpvfxcgx73" path="res://assets/luz/light.jpg" id="3_rv6wk"]
 
+[ext_resource type="PackedScene" path="res://effects/occlusion_outline/occlusion_outline.tscn" id="4_outline"]
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o6gfb"]
 texture = ExtResource("1_q8b2f")
 texture_region_size = Vector2i(32, 32)
@@ -73,3 +75,8 @@ texture_scale = 1.4
 
 [node name="DirectionalLight2D" type="DirectionalLight2D" parent="." unique_id=1239537104]
 color = Color(0.08685193, 0.0039056812, 0.08480906, 1)
+
+[node name="OcclusionOutline" parent="." instance=ExtResource("4_outline")]
+world_path = NodePath("..")
+player_sprite_path = NodePath("../player/sprites")
+occluder_paths = Array[NodePath]([NodePath("../tile_wall_base")])
