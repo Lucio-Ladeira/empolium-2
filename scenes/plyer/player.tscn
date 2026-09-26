@@ -352,7 +352,7 @@ states/idle/position = Vector2(348, 122)
 states/walk/node = SubResource("AnimationNodeBlendSpace2D_y3hgx")
 states/walk/position = Vector2(501, 122)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_74r1x"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_vnp4v"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_rthbq")]
-graph_offset = Vector2(137, -16)
+graph_offset = Vector2(-42, 60)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ksngb"]
 radius = 6.0
@@ -403,11 +403,19 @@ one_shot = true
 
 [node name="Label" type="Label" parent="." unique_id=1241413050]
 z_index = 6
-offset_left = -20.0
-offset_top = -33.0
-offset_right = 20.0
-offset_bottom = -10.0
-text = "p"
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -14.0
+offset_top = -31.0
+offset_right = 14.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
+text = "300"
 
 [connection signal="timeout" from="estamina_timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="dashtimer" to="." method="_on_dashtimer_timeout"]

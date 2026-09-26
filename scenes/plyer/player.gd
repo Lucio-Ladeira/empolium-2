@@ -11,6 +11,8 @@ extends CharacterBody2D
 @onready var label: Label = $Label
 
 
+
+
 var current_state = player_state.MOVE
 var last_direction := Vector2.DOWN
 
@@ -22,9 +24,11 @@ enum player_state {
 func _ready() -> void:
 	estamina_timer.start()
 	dash_timer.wait_time = dash_duration
+
+	
 func _physics_process(_delta):
 	label.text = str(estamina)
-	
+
 	match current_state:
 			
 		player_state.MOVE:

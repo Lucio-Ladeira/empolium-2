@@ -3,7 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://cabrpgfkjnfk5" path="res://assets/General list.png" id="1_q8b2f"]
 [ext_resource type="PackedScene" uid="uid://co75pskxmrpau" path="res://scenes/plyer/player.tscn" id="2_o6gfb"]
 [ext_resource type="Texture2D" uid="uid://bgmxpvfxcgx73" path="res://assets/luz/light.jpg" id="3_rv6wk"]
-
 [ext_resource type="PackedScene" path="res://effects/occlusion_outline/occlusion_outline.tscn" id="4_outline"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o6gfb"]
@@ -29,7 +28,7 @@ texture_region_size = Vector2i(32, 32)
 7:10/size_in_atlas = Vector2i(1, 2)
 7:10/0 = 0
 7:10/0/z_index = 1
-7:10/0/y_sort_origin = 16
+7:10/0/y_sort_origin = 11
 7:10/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_dena5")
 7:10/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, 16, -16, 24, 0, 32, 16, 24)
 
@@ -57,7 +56,7 @@ tile_set = SubResource("TileSet_iamw4")
 
 [node name="player" parent="." unique_id=1247319694 instance=ExtResource("2_o6gfb")]
 z_index = 1
-position = Vector2(304, 132)
+position = Vector2(363, 107)
 collision_layer = 128
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1063323318]
@@ -76,7 +75,7 @@ texture_scale = 1.4
 [node name="DirectionalLight2D" type="DirectionalLight2D" parent="." unique_id=1239537104]
 color = Color(0.08685193, 0.0039056812, 0.08480906, 1)
 
-[node name="OcclusionOutline" parent="." instance=ExtResource("4_outline")]
+[node name="OcclusionOutline" parent="." unique_id=244171291 instance=ExtResource("4_outline")]
 world_path = NodePath("..")
 player_sprite_path = NodePath("../player/sprites")
 occluder_paths = Array[NodePath]([NodePath("../tile_wall_base")])
