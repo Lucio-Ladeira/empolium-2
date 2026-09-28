@@ -360,6 +360,7 @@ radius = 6.0
 [node name="player_base" type="CharacterBody2D" unique_id=1247319694]
 z_as_relative = false
 y_sort_enabled = true
+collision_layer = 128
 script = ExtResource("1_lda7p")
 
 [node name="shadow" type="Sprite2D" parent="." unique_id=1791763576]

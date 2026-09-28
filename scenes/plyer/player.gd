@@ -4,6 +4,8 @@ extends CharacterBody2D
 @export var dash_speed := 250.0
 @export var dash_duration := 0.15
 @export var estamina := 300
+@export var vida := 5
+
 @onready var estamina_timer: Timer = $estamina_timer
 @onready var dash_timer: Timer = $dashtimer
 @onready var anim_tree: AnimationTree = $AnimationTree
@@ -11,23 +13,22 @@ extends CharacterBody2D
 @onready var label: Label = $Label
 
 
-
-
 var current_state = player_state.MOVE
 var last_direction := Vector2.DOWN
 
 enum player_state {
 	MOVE,
-	DASH
+	DASH,
+	DEATH
 }
 
 func _ready() -> void:
 	estamina_timer.start()
 	dash_timer.wait_time = dash_duration
 
-	
 func _physics_process(_delta):
-	label.text = str(estamina)
+	# label.text = str(estamina)
+	label.text = str(vida)
 
 	match current_state:
 			
@@ -36,6 +37,9 @@ func _physics_process(_delta):
 
 		player_state.DASH:
 			dash()
+		
+		player_state.DEATH:
+			morre()
 
 func move():
 	var direction = Input.get_vector(
@@ -63,6 +67,17 @@ func move():
 		return
 	move_and_slide()
 
+func dano(vlr_dano):
+	if vida >= 1:
+		if vida <= 1:
+			morre()
+		vida -= vlr_dano
+		print(vida)
+
+func morre():
+	print("Player morreu!")
+	get_tree().reload_current_scene()
+	# resetar para o checkpoint anterior
 
 func dash():
 	velocity = last_direction * dash_speed

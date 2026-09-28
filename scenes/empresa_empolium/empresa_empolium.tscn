@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://co75pskxmrpau" path="res://scenes/plyer/player.tscn" id="2_o6gfb"]
 [ext_resource type="Texture2D" uid="uid://bgmxpvfxcgx73" path="res://assets/luz/light.jpg" id="3_rv6wk"]
 [ext_resource type="PackedScene" path="res://effects/occlusion_outline/occlusion_outline.tscn" id="4_outline"]
+[ext_resource type="PackedScene" uid="uid://0bcum8qcuwqn" path="res://scenes/inimigos/dano_inimigo.tscn" id="5_ngc45"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o6gfb"]
 texture = ExtResource("1_q8b2f")
@@ -57,7 +58,6 @@ tile_set = SubResource("TileSet_iamw4")
 [node name="player" parent="." unique_id=1247319694 instance=ExtResource("2_o6gfb")]
 z_index = 1
 position = Vector2(363, 107)
-collision_layer = 128
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1063323318]
 color = Color(0.3, 0.3, 0.3, 1)
@@ -79,3 +79,6 @@ color = Color(0.08685193, 0.0039056812, 0.08480906, 1)
 world_path = NodePath("..")
 player_sprite_path = NodePath("../player/sprites")
 occluder_paths = Array[NodePath]([NodePath("../tile_wall_base")])
+
+[node name="dano_inimigo" parent="." unique_id=1859997487 instance=ExtResource("5_ngc45")]
+position = Vector2(283, 32)
