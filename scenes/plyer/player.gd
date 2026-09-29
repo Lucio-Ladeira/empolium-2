@@ -70,20 +70,23 @@ func move():
 func dano(vlr_dano):
 	if vida >= 1:
 		if vida <= 1:
+			current_state = player_state.DEATH
 			morre()
 		vida -= vlr_dano
-		print(vida)
+
 
 func morre():
-	print("Player morreu!")
-	get_tree().reload_current_scene()
+	velocity = Vector2.ZERO
+	anim_state.travel("death")
+	#get_tree().call_deferred("reload_current_scene")
 	# resetar para o checkpoint anterior
 
 func dash():
 	velocity = last_direction * dash_speed
 	move_and_slide()
 func _on_dashtimer_timeout() -> void:
-	current_state = player_state.MOVE
+	if current_state != player_state.DEATH:
+		current_state = player_state.MOVE
 
 func animation_state(direction):
 	anim_tree.set("parameters/idle/blend_position", direction)
