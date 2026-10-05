@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chsdk36ctds5b"
-path="res://.godot/imported/Character_idle.png-4c0d8c3561a5cc1fc235aa1667981822.ctex"
+uid="uid://3ewtisuygbbi"
+path="res://.godot/imported/natusuki.png-d6b6b7b5fd6453518355d02dc40e0249.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Character_idle.png"
-dest_files=["res://.godot/imported/Character_idle.png-4c0d8c3561a5cc1fc235aa1667981822.ctex"]
+source_file="res://assets/natusuki.png"
+dest_files=["res://.godot/imported/natusuki.png-d6b6b7b5fd6453518355d02dc40e0249.ctex"]
 
 [params]
 

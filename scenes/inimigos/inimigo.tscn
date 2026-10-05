@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://bppwqwhagtnw5"]
+
+[ext_resource type="Script" uid="uid://bvko533snigbl" path="res://scenes/inimigos/inimigo.gd" id="1_d4qpj"]
+[ext_resource type="Texture2D" uid="uid://3ewtisuygbbi" path="res://assets/natusuki.png" id="1_k84cy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_27mt5"]
+radius = 7.071068
+
+[node name="Inimigo" type="CharacterBody2D" unique_id=1236540571]
+z_index = 1
+z_as_relative = false
+y_sort_enabled = true
+collision_layer = 4
+collision_mask = 131
+script = ExtResource("1_d4qpj")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=342324004 groups=["outline"]]
+scale = Vector2(0.084403865, 0.08440387)
+texture = ExtResource("1_k84cy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=910944646]
+position = Vector2(0, 15)
+shape = SubResource("CircleShape2D_27mt5")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=2113103331]
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D" unique_id=959723212]
+position = Vector2(0, 15)
+shape = SubResource("CircleShape2D_27mt5")

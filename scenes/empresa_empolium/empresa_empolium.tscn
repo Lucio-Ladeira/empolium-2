@@ -1,10 +1,12 @@
 [gd_scene format=4 uid="uid://dpcnowfd7ly38"]
 
 [ext_resource type="Texture2D" uid="uid://cabrpgfkjnfk5" path="res://assets/General list.png" id="1_q8b2f"]
-[ext_resource type="PackedScene" uid="uid://co75pskxmrpau" path="res://scenes/plyer/player.tscn" id="2_o6gfb"]
+[ext_resource type="PackedScene" uid="uid://co75pskxmrpau" path="res://scenes/player/player.tscn" id="2_ktifd"]
 [ext_resource type="Texture2D" uid="uid://bgmxpvfxcgx73" path="res://assets/luz/light.jpg" id="3_rv6wk"]
-[ext_resource type="PackedScene" path="res://effects/occlusion_outline/occlusion_outline.tscn" id="4_outline"]
+[ext_resource type="PackedScene" uid="uid://bdkds5ico8ij5" path="res://effects/occlusion_outline/occlusion_outline.tscn" id="4_outline"]
 [ext_resource type="PackedScene" uid="uid://0bcum8qcuwqn" path="res://scenes/inimigos/dano_inimigo.tscn" id="5_ngc45"]
+[ext_resource type="PackedScene" uid="uid://dauy2mn0u6yhl" path="res://scenes/menus/menu_de_pause.tscn" id="6_ktifd"]
+[ext_resource type="PackedScene" uid="uid://bppwqwhagtnw5" path="res://scenes/inimigos/inimigo.tscn" id="7_7tcas"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o6gfb"]
 texture = ExtResource("1_q8b2f")
@@ -55,9 +57,11 @@ y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAUAAMAAAAHAAoAAAATAAMAAAAHAAoAAAASAAMAAAAHAAoAAAAPAAMAAAAHAAoAAAARAAMAAAAHAAoAAAAQAAMAAAAHAAoAAAAVAAMAAAAHAAoAAAAVAAIAAAAHAAoAAAAVAAEAAAAHAAoAAAAVAAAAAAAHAAoAAAAVAP//AAAHAAoAAAAVAP7/AAAHAAoAAAAVAP3/AAAHAAoAAAAVAPz/AAAHAAoAAAAMAAIAAAAHAAoAAAASAPr/AAAHAAoAAAATAPr/AAAHAAoAAAAUAPr/AAAHAAoAAAAVAPv/AAAHAAoAAAAVAPr/AAAHAAoAAAAMAAMAAAAHAAoAAAANAAMAAAAHAAoAAAAOAAMAAAAHAAoAAAARAPr/AAAHAAoAAAAQAPr/AAAHAAoAAAAPAPr/AAAHAAoAAAAPAPn/AAAHAAoAAAAPAPj/AAAHAAoAAAAPAPf/AAAHAAoAAAAPAPb/AAAHAAoAAAAPAPX/AAAHAAoAAAAOAPX/AAAHAAoAAAAPAPT/AAAHAAoAAAAOAPT/AAAHAAoAAAAMAPP/AAAHAAoAAAAMAPT/AAAHAAoAAAANAPT/AAAHAAoAAAANAPP/AAAHAAoAAAALAPP/AAAHAAoAAAALAPL/AAAHAAoAAAAKAPP/AAAHAAoAAAAKAPL/AAAHAAoAAAAJAPL/AAAHAAoAAAAIAPL/AAAHAAoAAAAHAPL/AAAHAAoAAAAGAPL/AAAHAAoAAAAFAPP/AAAHAAoAAAAEAPP/AAAHAAoAAAADAPP/AAAHAAoAAAADAPT/AAAHAAoAAAACAPT/AAAHAAoAAAACAPX/AAAHAAoAAAACAPb/AAAHAAoAAAABAPb/AAAHAAoAAAABAPf/AAAHAAoAAAABAPj/AAAHAAoAAAABAPn/AAAHAAoAAAABAPr/AAAHAAoAAAACAPr/AAAHAAoAAAACAPv/AAAHAAoAAAACAPz/AAAHAAoAAAADAPz/AAAHAAoAAAADAP3/AAAHAAoAAAAEAP3/AAAHAAoAAAAEAP7/AAAHAAoAAAAFAP7/AAAHAAoAAAAFAP//AAAHAAoAAAAGAP//AAAHAAoAAAAGAAAAAAAHAAoAAAAHAAAAAAAHAAoAAAAIAAAAAAAHAAoAAAAIAAEAAAAHAAoAAAAJAAEAAAAHAAoAAAAKAAEAAAAHAAoAAAAKAAIAAAAHAAoAAAALAAIAAAAHAAoAAAAIAPr/AAAHAAoAAAAIAPv/AAAHAAoAAAAJAPb/AAAHAAoAAAAIAPz/AAAHAAoAAAAIAP3/AAAHAAoAAAAIAP7/AAAHAAoAAAAIAP//AAAHAAoAAAAJAPX/AAAHAAoAAAAJAPT/AAAHAAoAAAAJAPP/AAAHAAoAAAA=")
 tile_set = SubResource("TileSet_iamw4")
 
-[node name="player" parent="." unique_id=1247319694 instance=ExtResource("2_o6gfb")]
-z_index = 1
-position = Vector2(363, 107)
+[node name="player_base" parent="." unique_id=1247319694 instance=ExtResource("2_ktifd")]
+position = Vector2(296, 101)
+
+[node name="AnimationTree" parent="player_base" index="3" unique_id=1249770145]
+parameters/attack/blend_position = Vector2(0, 0)
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1063323318]
 color = Color(0.3, 0.3, 0.3, 1)
@@ -77,8 +81,16 @@ color = Color(0.08685193, 0.0039056812, 0.08480906, 1)
 
 [node name="OcclusionOutline" parent="." unique_id=244171291 instance=ExtResource("4_outline")]
 world_path = NodePath("..")
-player_sprite_path = NodePath("../player/sprites")
+outline_sprite_paths = Array[NodePath]([NodePath("../player_base/sprites"), NodePath("../Inimigo/Sprite2D")])
 occluder_paths = Array[NodePath]([NodePath("../tile_wall_base")])
 
 [node name="dano_inimigo" parent="." unique_id=1859997487 instance=ExtResource("5_ngc45")]
 position = Vector2(283, 32)
+
+[node name="Menu de pause" parent="." unique_id=2144270863 instance=ExtResource("6_ktifd")]
+
+[node name="Inimigo" parent="." unique_id=1236540571 instance=ExtResource("7_7tcas")]
+position = Vector2(286, 57)
+
+[editable path="player_base"]
+[editable path="Inimigo"]

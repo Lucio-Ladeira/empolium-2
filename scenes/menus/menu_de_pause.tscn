@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://dauy2mn0u6yhl"]
+
+[ext_resource type="Script" uid="uid://dtxywyx2sdp5x" path="res://canvas_layer.gd" id="1_7hd10"]
+[ext_resource type="Shader" uid="uid://d3dw8ay2xcnma" path="res://scenes/menus/menu_de_pause.gdshader" id="2_d8wmj"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d8wmj"]
+shader = ExtResource("2_d8wmj")
+
+[node name="Menu de pause" type="Control" unique_id=2144270863]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=360818086]
+script = ExtResource("1_7hd10")
+
+[node name="Label" type="Label" parent="CanvasLayer" unique_id=1807640205]
+material = SubResource("ShaderMaterial_d8wmj")
+offset_right = 51.0
+offset_bottom = 23.0
+text = "PAUSE"

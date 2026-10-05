@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://bdkds5ico8ij5"]
 
-[ext_resource type="Script" path="res://effects/occlusion_outline/occlusion_outline.gd" id="1_effect"]
+[ext_resource type="Script" uid="uid://bueiceujux0kr" path="res://effects/occlusion_outline/occlusion_outline.gd" id="1_effect"]
 
-[node name="OcclusionOutline" type="Node"]
+[node name="OcclusionOutline" type="Node" unique_id=191778959]
 script = ExtResource("1_effect")

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://xfy6f3iidv7m"]
+
+[ext_resource type="Script" uid="uid://bueiceujux0kr" path="res://effects/occlusion_outline/occlusion_outline.gd" id="1_pi74m"]
+
+[node name="OcclusionOutline" type="Node" unique_id=191778959]
+script = ExtResource("1_pi74m")

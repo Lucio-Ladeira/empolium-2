@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://d1ya5o1l76qym"]
+
+[ext_resource type="PackedScene" uid="uid://co75pskxmrpau" path="res://scenes/player/player.tscn" id="1_berrw"]
+[ext_resource type="Texture2D" uid="uid://d4f4qseht367v" path="res://assets/tileset_completo.png" id="2_pnnb1"]
+
+[node name="player_demo" unique_id=1247319694 instance=ExtResource("1_berrw")]
+
+[node name="sprites" parent="." index="1" unique_id=2030719960]
+position = Vector2(0, -19)
+texture = ExtResource("2_pnnb1")
+vframes = 12
+
+[node name="anim" parent="." index="2" unique_id=1661281609]
+autoplay = &"RESET"
+
+[node name="AnimationTree" parent="." index="3" unique_id=1249770145]
+parameters/idle/blend_position = Vector2(0.011124849, 0.013698578)
