@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://co75pskxmrpau" path="res://scenes/player/player.tscn" id="2_ktifd"]
 [ext_resource type="Texture2D" uid="uid://bgmxpvfxcgx73" path="res://assets/luz/light.jpg" id="3_rv6wk"]
 [ext_resource type="PackedScene" uid="uid://bdkds5ico8ij5" path="res://effects/occlusion_outline/occlusion_outline.tscn" id="4_outline"]
-[ext_resource type="PackedScene" uid="uid://0bcum8qcuwqn" path="res://scenes/inimigos/dano_inimigo.tscn" id="5_ngc45"]
 [ext_resource type="PackedScene" uid="uid://dauy2mn0u6yhl" path="res://scenes/menus/menu_de_pause.tscn" id="6_ktifd"]
 [ext_resource type="PackedScene" uid="uid://bppwqwhagtnw5" path="res://scenes/inimigos/inimigo.tscn" id="7_7tcas"]
 
@@ -43,6 +42,11 @@ occlusion_layer_0/light_mask = 1
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_rv6wk")
 
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_7tcas"]
+vertices = PackedVector2Array(328.96875, 41.21875, 359.89844, 24.609375, 352.39844, 35.882813, 339.8672, 48.296875, 362.20313, 37.84375, 322.72656, 108.03906, 366.34375, 129.84375, 300.34375, 161.72656, 204.21094, 107.92969, 208.71094, 98.9375, 321.29688, -18.171875, 325.42188, -16.109375, 298.5703, -3.0078125, 297.59375, -9.921875, 244.32031, -17.46875, 155.22656, 29.460938, 155.75781, 14.640625, 172, 7.5390625, 324.10938, 76.171875, 196.29688, 89.796875, 266.25, 56.15625, 309.4922, 47.710938, 291.0078, 24.203125, 263.78125, -5.796875, 271.65625, -27.203125, 254.84375, -17.3125, 238.67188, -27.40625, 208.46875, -10.8515625, 190.39844, -18.867188, 172, -9.0078125)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(2, 4, 3), PackedInt32Array(5, 6, 7, 8, 9), PackedInt32Array(10, 11, 12, 13), PackedInt32Array(14, 15, 16, 17), PackedInt32Array(18, 5, 9, 19, 20, 21), PackedInt32Array(0, 3, 18, 21), PackedInt32Array(22, 21, 20, 23), PackedInt32Array(24, 13, 12, 22, 23, 25), PackedInt32Array(25, 23, 14, 26), PackedInt32Array(27, 26, 14), PackedInt32Array(27, 14, 17), PackedInt32Array(28, 27, 17, 29)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(256, 50, 177, 88, 196, 102, 191, 112, 300, 173, 389, 130, 333, 102, 334, 79, 347, 56, 394, 34, 369, 29, 377, 17, 366, 10, 325, 32, 313, 36, 302, 22, 307, 4, 348, -16, 322, -29, 299, -21, 272, -39, 255, -29, 239, -39, 208, -22, 190, -30, 162, -15, 162, 1, 146, 8, 145, 36, 151, 43, 244, -6, 254, 0)])
+
 [node name="EmpresaEmpolium" type="Node2D" unique_id=307392628]
 z_as_relative = false
 y_sort_enabled = true
@@ -67,7 +71,7 @@ parameters/attack/blend_position = Vector2(0, 0)
 color = Color(0.3, 0.3, 0.3, 1)
 
 [node name="PointLight2D" type="PointLight2D" parent="." unique_id=393327444]
-position = Vector2(288, 32)
+position = Vector2(284, 44)
 color = Color(0.4830957, 0.27723423, 0.9938926, 1)
 energy = 1.51
 shadow_enabled = true
@@ -84,13 +88,13 @@ world_path = NodePath("..")
 outline_sprite_paths = Array[NodePath]([NodePath("../player_base/sprites"), NodePath("../Inimigo/Sprite2D")])
 occluder_paths = Array[NodePath]([NodePath("../tile_wall_base")])
 
-[node name="dano_inimigo" parent="." unique_id=1859997487 instance=ExtResource("5_ngc45")]
-position = Vector2(283, 32)
-
 [node name="Menu de pause" parent="." unique_id=2144270863 instance=ExtResource("6_ktifd")]
 
 [node name="Inimigo" parent="." unique_id=1236540571 instance=ExtResource("7_7tcas")]
-position = Vector2(286, 57)
+position = Vector2(202, 7)
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=960498580]
+navigation_polygon = SubResource("NavigationPolygon_7tcas")
 
 [editable path="player_base"]
 [editable path="Inimigo"]
