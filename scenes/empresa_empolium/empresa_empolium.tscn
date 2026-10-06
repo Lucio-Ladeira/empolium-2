@@ -5,7 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://bgmxpvfxcgx73" path="res://assets/luz/light.jpg" id="3_rv6wk"]
 [ext_resource type="PackedScene" uid="uid://bdkds5ico8ij5" path="res://effects/occlusion_outline/occlusion_outline.tscn" id="4_outline"]
 [ext_resource type="PackedScene" uid="uid://dauy2mn0u6yhl" path="res://scenes/menus/menu_de_pause.tscn" id="6_ktifd"]
-[ext_resource type="PackedScene" uid="uid://bppwqwhagtnw5" path="res://scenes/inimigos/inimigo.tscn" id="7_7tcas"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o6gfb"]
 texture = ExtResource("1_q8b2f")
@@ -85,16 +84,12 @@ color = Color(0.08685193, 0.0039056812, 0.08480906, 1)
 
 [node name="OcclusionOutline" parent="." unique_id=244171291 instance=ExtResource("4_outline")]
 world_path = NodePath("..")
-outline_sprite_paths = Array[NodePath]([NodePath("../player_base/sprites"), NodePath("../Inimigo/Sprite2D")])
+outline_sprite_paths = Array[NodePath]([NodePath("../player_base/sprites"), NodePath("")])
 occluder_paths = Array[NodePath]([NodePath("../tile_wall_base")])
 
 [node name="Menu de pause" parent="." unique_id=2144270863 instance=ExtResource("6_ktifd")]
-
-[node name="Inimigo" parent="." unique_id=1236540571 instance=ExtResource("7_7tcas")]
-position = Vector2(202, 7)
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=960498580]
 navigation_polygon = SubResource("NavigationPolygon_7tcas")
 
 [editable path="player_base"]
-[editable path="Inimigo"]
