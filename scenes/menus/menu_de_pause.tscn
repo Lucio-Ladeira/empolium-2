@@ -2,11 +2,136 @@
 
 [ext_resource type="Script" uid="uid://dtxywyx2sdp5x" path="res://canvas_layer.gd" id="1_7hd10"]
 [ext_resource type="Shader" uid="uid://d3dw8ay2xcnma" path="res://scenes/menus/menu_de_pause.gdshader" id="2_d8wmj"]
+[ext_resource type="Texture2D" uid="uid://dwvq2rt33fjn8" path="res://assets/mão.png" id="3_7jv31"]
+[ext_resource type="Texture2D" uid="uid://b88g7yjvybaar" path="res://assets/visor/visor1.png" id="4_oe8eg"]
+[ext_resource type="Texture2D" uid="uid://bsguh8fbrdf1h" path="res://assets/visor/visor2.png" id="5_75asa"]
+[ext_resource type="Texture2D" uid="uid://carnqc376ylg2" path="res://assets/visor/visor3.png" id="6_d7isp"]
+[ext_resource type="Texture2D" uid="uid://c6opwgp440uoa" path="res://assets/visor/visor4.png" id="7_mlowt"]
+[ext_resource type="Texture2D" uid="uid://cdc0rurxf2x3d" path="res://assets/visor/visor5.png" id="8_jfm56"]
+[ext_resource type="Texture2D" uid="uid://b5fg3wvj3vmx0" path="res://assets/visor/visor6.png" id="9_3vhdw"]
+[ext_resource type="Texture2D" uid="uid://c1nqo0tp5adok" path="res://assets/visor/visor7.png" id="10_6dgqi"]
+[ext_resource type="Texture2D" uid="uid://b2hwmkdvweegf" path="res://assets/visor/visor8.png" id="11_lo2yj"]
+[ext_resource type="Texture2D" uid="uid://b12d808x6ixty" path="res://assets/visor/visor9.png" id="12_qdmud"]
+[ext_resource type="Texture2D" uid="uid://iqhbkj2hyxwj" path="res://assets/visor/visor10.png" id="13_wb3gc"]
+[ext_resource type="Texture2D" uid="uid://bf21iwookd81j" path="res://assets/visor/visor11.png" id="14_wvhf0"]
+[ext_resource type="Texture2D" uid="uid://ujs5mhs6d6gd" path="res://assets/visor/visor12.png" id="15_1uunh"]
+[ext_resource type="Texture2D" uid="uid://ppcjkt8577jg" path="res://assets/visor/visor13.png" id="16_rwags"]
+[ext_resource type="Texture2D" uid="uid://dsaajgs6p3mfq" path="res://assets/visor/visor15.png" id="17_r7okp"]
+[ext_resource type="Texture2D" uid="uid://cxxnsu7o2oxbw" path="res://assets/visor/visor16.png" id="18_a2d1w"]
+[ext_resource type="Texture2D" uid="uid://bfa1vtngdjbtt" path="res://assets/visor/visor14.png" id="19_16fip"]
+[ext_resource type="Texture2D" uid="uid://dfbf1hobqiqjl" path="res://assets/visor/visor17.png" id="20_3tfql"]
+[ext_resource type="Texture2D" uid="uid://nk3ggbacjrdp" path="res://assets/visor/visor18.png" id="21_87wwo"]
+[ext_resource type="Texture2D" uid="uid://ctimoi4pnl26c" path="res://assets/visor/visor19.png" id="22_es5bv"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_d8wmj"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dp0r8"]
 shader = ExtResource("2_d8wmj")
+shader_parameter/vhs_resolution = Vector2(320, 240)
+shader_parameter/samples = 2
+shader_parameter/crease_noise = 1.0
+shader_parameter/crease_opacity = 0.5
+shader_parameter/filter_intensity = 0.1
+shader_parameter/tape_crease_smear = 0.2
+shader_parameter/tape_crease_intensity = 0.2
+shader_parameter/tape_crease_jitter = 0.1
+shader_parameter/tape_crease_speed = 0.5
+shader_parameter/tape_crease_discoloration = 1.0
+shader_parameter/bottom_border_thickness = 6.0
+shader_parameter/bottom_border_jitter = 6.0
+shader_parameter/noise_intensity = 0.1
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_27mt5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_oe8eg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_75asa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_d7isp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_mlowt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_jfm56")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_3vhdw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_6dgqi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_lo2yj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_qdmud")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_wb3gc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_wvhf0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_1uunh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_rwags")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_r7okp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_a2d1w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_16fip")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_3tfql")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_87wwo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_es5bv")
+}],
+"loop": 0,
+"name": &"ligando",
+"speed": 40.0
+}]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iaypp"]
+bg_color = Color(0.40784314, 0.33333334, 0.5568628, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pgfk0"]
+bg_color = Color(0.58431375, 0.33333334, 0.9490196, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4t7k6"]
+shader = ExtResource("2_d8wmj")
+shader_parameter/vhs_resolution = Vector2(320, 240)
+shader_parameter/samples = 2
+shader_parameter/crease_noise = 1.0
+shader_parameter/crease_opacity = 0.5
+shader_parameter/filter_intensity = 0.1
+shader_parameter/tape_crease_smear = 0.2
+shader_parameter/tape_crease_intensity = 0.2
+shader_parameter/tape_crease_jitter = 0.1
+shader_parameter/tape_crease_speed = 0.5
+shader_parameter/tape_crease_discoloration = 1.0
+shader_parameter/bottom_border_thickness = 6.0
+shader_parameter/bottom_border_jitter = 6.0
+shader_parameter/noise_intensity = 0.1
 
 [node name="Menu de pause" type="Control" unique_id=2144270863]
+material = SubResource("ShaderMaterial_dp0r8")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,8 +142,92 @@ grow_vertical = 2
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=360818086]
 script = ExtResource("1_7hd10")
 
-[node name="Label" type="Label" parent="CanvasLayer" unique_id=1807640205]
-material = SubResource("ShaderMaterial_d8wmj")
-offset_right = 51.0
-offset_bottom = 23.0
-text = "PAUSE"
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer" unique_id=1466234277]
+z_index = 13
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -237.33301
+offset_top = -120.0
+offset_right = 237.33362
+offset_bottom = 147.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("3_7jv31")
+expand_mode = 1
+
+[node name="visor" type="Control" parent="CanvasLayer/TextureRect" unique_id=624292108]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.92218
+offset_top = 47.476563
+offset_right = 37.405945
+offset_bottom = 94.92969
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CanvasLayer/TextureRect/visor" unique_id=1362210767]
+position = Vector2(51.24436, 23.700987)
+scale = Vector2(0.49441966, 0.49437317)
+sprite_frames = SubResource("SpriteFrames_27mt5")
+animation = &"ligando"
+
+[node name="Menu" type="Control" parent="CanvasLayer/TextureRect/visor" unique_id=909383212]
+anchors_preset = 0
+offset_right = 102.3255
+offset_bottom = 47.444366
+mouse_filter = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/TextureRect/visor/Menu" unique_id=1070584460]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -33.64589
+offset_top = -14.0
+offset_right = 33.64589
+offset_bottom = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="melhorias" type="Button" parent="CanvasLayer/TextureRect/visor/Menu/VBoxContainer" unique_id=1858573210]
+layout_mode = 2
+focus_neighbor_top = NodePath("../armas")
+focus_neighbor_bottom = NodePath("../armas")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_iaypp")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_pgfk0")
+text = "Melhorias"
+
+[node name="armas" type="Button" parent="CanvasLayer/TextureRect/visor/Menu/VBoxContainer" unique_id=1693555242]
+layout_mode = 2
+focus_neighbor_top = NodePath("../melhorias")
+focus_neighbor_bottom = NodePath("../melhorias")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_iaypp")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_pgfk0")
+text = "Armas"
+
+[node name="vhs" type="ColorRect" parent="CanvasLayer" unique_id=935606445]
+visible = false
+z_index = 4
+material = SubResource("ShaderMaterial_4t7k6")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 0.50980395)
+
+[connection signal="animation_finished" from="CanvasLayer/TextureRect/visor/AnimatedSprite2D" to="CanvasLayer" method="_on_animated_sprite_2d_animation_finished"]
