@@ -1,0 +1,487 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://os/desktop/desktop.gd" id="1"]
+[ext_resource type="Script" path="res://os/desktop/window_manager.gd" id="2"]
+[ext_resource type="Script" path="res://os/desktop/selection_overlay.gd" id="3"]
+[ext_resource type="Script" path="res://os/desktop/desktop_icon.gd" id="4"]
+[ext_resource type="Texture2D" path="res://assets/wallpaper.svg" id="5"]
+[ext_resource type="Texture2D" path="res://assets/avatar.svg" id="6"]
+
+[sub_resource type="StyleBoxFlat" id="taskbar"]
+bg_color = Color(0.035, 0.05, 0.10, 0.97)
+border_width_top = 1
+border_color = Color(0.17, 0.30, 0.45, 1)
+
+[sub_resource type="StyleBoxFlat" id="launcher"]
+bg_color = Color(0.035, 0.055, 0.10, 0.99)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.38, 0.53, 1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[sub_resource type="StyleBoxFlat" id="rail"]
+bg_color = Color(0.055, 0.08, 0.14, 1)
+border_width_right = 1
+border_color = Color(0.16, 0.28, 0.4, 1)
+content_margin_left = 8.0
+content_margin_top = 10.0
+content_margin_right = 8.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="tile"]
+bg_color = Color(0.075, 0.11, 0.18, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.16, 0.30, 0.43, 1)
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="tile_hover"]
+bg_color = Color(0.10, 0.17, 0.25, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.68, 0.78, 1)
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+[node name="Desktop" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1")
+
+[node name="Wallpaper" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Icons" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 22.0
+offset_right = 148.0
+offset_bottom = 545.0
+theme_override_constants/separation = 4
+
+[node name="Game" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(108, 92)
+layout_mode = 2
+text = "Empolium 2"
+script = ExtResource("4")
+icon_kind = "game"
+
+[node name="Settings" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(108, 92)
+layout_mode = 2
+text = "Configurações"
+script = ExtResource("4")
+icon_kind = "settings"
+
+[node name="Files" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(108, 92)
+layout_mode = 2
+text = "Arquivos"
+script = ExtResource("4")
+icon_kind = "files"
+
+[node name="Extras" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(108, 92)
+layout_mode = 2
+text = "Extras"
+script = ExtResource("4")
+icon_kind = "extras"
+
+[node name="About" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(124, 92)
+layout_mode = 2
+text = "Sobre o sistema"
+script = ExtResource("4")
+icon_kind = "about"
+
+[node name="SelectionOverlay" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3")
+
+[node name="WindowManager" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2")
+
+[node name="DesktopStatus" type="Label" parent="."]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -82.0
+offset_right = 260.0
+offset_bottom = -60.0
+grow_horizontal = 2
+grow_vertical = 0
+text = ""
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.90, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 13
+mouse_filter = 2
+
+[node name="Taskbar" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -52.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("taskbar")
+
+[node name="StartButton" type="Button" parent="Taskbar"]
+custom_minimum_size = Vector2(158, 38)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 166.0
+offset_bottom = 45.0
+text = "◆  Iniciar"
+clip_text = true
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="WindowButtons" type="HBoxContainer" parent="Taskbar"]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 176.0
+offset_top = 7.0
+offset_right = -280.0
+offset_bottom = 45.0
+clip_contents = true
+theme_override_constants/separation = 4
+
+[node name="SystemTray" type="Label" parent="Taskbar"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -230.0
+offset_top = 0.0
+offset_right = -98.0
+offset_bottom = 52.0
+grow_horizontal = 0
+text = "◉  ◖  ▴"
+horizontal_alignment = 2
+vertical_alignment = 1
+theme_override_colors/font_color = Color(0.68, 0.79, 0.9, 1)
+theme_override_font_sizes/font_size = 13
+mouse_filter = 2
+
+[node name="Clock" type="Label" parent="Taskbar"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -94.0
+offset_top = 2.0
+offset_right = -12.0
+offset_bottom = 50.0
+grow_horizontal = 0
+text = "00:00"
+horizontal_alignment = 2
+vertical_alignment = 1
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 13
+mouse_filter = 2
+
+[node name="StartMenu" type="Panel" parent="."]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -534.0
+offset_right = 628.0
+offset_bottom = -64.0
+grow_vertical = 0
+clip_contents = true
+theme_override_styles/panel = SubResource("launcher")
+
+[node name="Menu" type="HBoxContainer" parent="StartMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="SidebarPanel" type="PanelContainer" parent="StartMenu/Menu"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("rail")
+
+[node name="Sidebar" type="VBoxContainer" parent="StartMenu/Menu/SidebarPanel"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="Profile" type="HBoxContainer" parent="StartMenu/Menu/SidebarPanel/Sidebar"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Avatar" type="TextureRect" parent="StartMenu/Menu/SidebarPanel/Sidebar/Profile"]
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+texture = ExtResource("6")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="UserInfo" type="VBoxContainer" parent="StartMenu/Menu/SidebarPanel/Sidebar/Profile"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="Username" type="Label" parent="StartMenu/Menu/SidebarPanel/Sidebar/Profile/UserInfo"]
+layout_mode = 2
+text = "empolium"
+theme_override_colors/font_color = Color(0.91, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 15
+
+[node name="Session" type="Label" parent="StartMenu/Menu/SidebarPanel/Sidebar/Profile/UserInfo"]
+layout_mode = 2
+text = "Sessão pessoal"
+theme_override_colors/font_color = Color(0.5, 0.64, 0.79, 1)
+theme_override_font_sizes/font_size = 11
+
+[node name="Divider" type="HSeparator" parent="StartMenu/Menu/SidebarPanel/Sidebar"]
+layout_mode = 2
+
+[node name="Home" type="Button" parent="StartMenu/Menu/SidebarPanel/Sidebar"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "⌂  Início"
+alignment = 0
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="Files" type="Button" parent="StartMenu/Menu/SidebarPanel/Sidebar"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "▤  Arquivos"
+alignment = 0
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="Settings" type="Button" parent="StartMenu/Menu/SidebarPanel/Sidebar"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "⚙  Configurações"
+alignment = 0
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="About" type="Button" parent="StartMenu/Menu/SidebarPanel/Sidebar"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "ⓘ  Sobre"
+alignment = 0
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="Spacer" type="Control" parent="StartMenu/Menu/SidebarPanel/Sidebar"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Power" type="Button" parent="StartMenu/Menu/SidebarPanel/Sidebar"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "⏻  Energia"
+alignment = 0
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="MainContent" type="VBoxContainer" parent="StartMenu/Menu"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Welcome" type="VBoxContainer" parent="StartMenu/Menu/MainContent"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Heading" type="Label" parent="StartMenu/Menu/MainContent/Welcome"]
+layout_mode = 2
+text = "Olá, empolium"
+theme_override_colors/font_color = Color(0.91, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 22
+
+[node name="Subheading" type="Label" parent="StartMenu/Menu/MainContent/Welcome"]
+layout_mode = 2
+text = "Acesse seus aplicativos e ferramentas."
+theme_override_colors/font_color = Color(0.57, 0.68, 0.79, 1)
+theme_override_font_sizes/font_size = 12
+
+[node name="Search" type="LineEdit" parent="StartMenu/Menu/MainContent"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+placeholder_text = "Buscar aplicativos"
+clear_button_enabled = true
+
+[node name="AppsHeading" type="Label" parent="StartMenu/Menu/MainContent"]
+layout_mode = 2
+text = "Aplicativos"
+theme_override_colors/font_color = Color(0.48, 0.81, 0.89, 1)
+theme_override_font_sizes/font_size = 13
+
+[node name="AppScroll" type="ScrollContainer" parent="StartMenu/Menu/MainContent"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 1
+
+[node name="ApplicationGrid" type="GridContainer" parent="StartMenu/Menu/MainContent/AppScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="Game" type="Button" parent="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid"]
+custom_minimum_size = Vector2(0, 76)
+size_flags_horizontal = 3
+layout_mode = 2
+text = "Empolium 2"
+alignment = 0
+theme_override_constants/h_separation = 12
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="Settings" type="Button" parent="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid"]
+custom_minimum_size = Vector2(0, 76)
+size_flags_horizontal = 3
+layout_mode = 2
+text = "Configurações"
+alignment = 0
+theme_override_constants/h_separation = 12
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="Files" type="Button" parent="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid"]
+custom_minimum_size = Vector2(0, 76)
+size_flags_horizontal = 3
+layout_mode = 2
+text = "Arquivos"
+alignment = 0
+theme_override_constants/h_separation = 12
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="Extras" type="Button" parent="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid"]
+custom_minimum_size = Vector2(0, 76)
+size_flags_horizontal = 3
+layout_mode = 2
+text = "Extras"
+alignment = 0
+theme_override_constants/h_separation = 12
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="About" type="Button" parent="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid"]
+custom_minimum_size = Vector2(0, 76)
+size_flags_horizontal = 3
+layout_mode = 2
+text = "Sobre o sistema"
+alignment = 0
+theme_override_constants/h_separation = 12
+theme_override_styles/normal = SubResource("tile")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_styles/pressed = SubResource("tile_hover")
+
+[node name="Session" type="Label" parent="StartMenu/Menu/MainContent"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+text = "Empolium OS  ·  Sessão empolium"
+theme_override_colors/font_color = Color(0.43, 0.55, 0.68, 1)
+theme_override_font_sizes/font_size = 11
+
+[node name="PowerMenu" type="PopupMenu" parent="."]
+theme_override_styles/panel = SubResource("launcher")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_colors/font_color = Color(0.91, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_constants/h_separation = 12
+
+[node name="ContextMenu" type="PopupMenu" parent="."]
+theme_override_styles/panel = SubResource("launcher")
+theme_override_styles/hover = SubResource("tile_hover")
+theme_override_colors/font_color = Color(0.91, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_constants/h_separation = 12
+
+[node name="ClockTimer" type="Timer" parent="."]
+wait_time = 15.0
+autostart = true
+
+[connection signal="pressed" from="Taskbar/StartButton" to="." method="_toggle_start_menu"]
+[connection signal="pressed" from="Icons/Game" to="." method="_launch_game"]
+[connection signal="pressed" from="Icons/Settings" to="." method="_open_settings"]
+[connection signal="pressed" from="Icons/Files" to="." method="_open_files"]
+[connection signal="pressed" from="Icons/Extras" to="." method="_open_extras"]
+[connection signal="pressed" from="Icons/About" to="." method="_open_about"]
+[connection signal="pressed" from="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid/Game" to="." method="_launch_game"]
+[connection signal="pressed" from="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid/Settings" to="." method="_open_settings"]
+[connection signal="pressed" from="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid/Files" to="." method="_open_files"]
+[connection signal="pressed" from="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid/Extras" to="." method="_open_extras"]
+[connection signal="pressed" from="StartMenu/Menu/MainContent/AppScroll/ApplicationGrid/About" to="." method="_open_about"]
+[connection signal="text_changed" from="StartMenu/Menu/MainContent/Search" to="." method="_filter_start_menu"]
+[connection signal="timeout" from="ClockTimer" to="." method="_update_clock"]

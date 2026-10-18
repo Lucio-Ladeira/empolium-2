@@ -1,0 +1,47 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://os/apps/empolium/empolium.gd" id="1"]
+
+[node name="Empolium" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Content"]
+layout_mode = 2
+text = "Empolium 2"
+theme_override_font_sizes/font_size = 30
+
+[node name="Description" type="Label" parent="Content"]
+layout_mode = 2
+text = "Olá, empolium.\nAbra o jogo ou confira os extras."
+
+[node name="Play" type="Button" parent="Content"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Jogar"
+
+[node name="Extras" type="Button" parent="Content"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "Extras"
+
+[node name="Status" type="Label" parent="Content"]
+layout_mode = 2
+text = ""
+
+[connection signal="pressed" from="Content/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Content/Extras" to="." method="_on_extras_pressed"]

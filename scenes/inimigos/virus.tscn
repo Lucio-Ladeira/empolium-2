@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/inimigos/inimigo.tscn" id="1"]
+[ext_resource type="Script" path="res://scenes/inimigos/virus.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/inimigos/virus.svg" id="3"]
+
+[node name="Virus" instance=ExtResource("1")]
+script = ExtResource("2")
+tipo_drop = "virus"
+velocidade = 20.0
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3")
+scale = Vector2(0.8, 0.8)
+
+[node name="Nome" type="Label" parent="."]
+offset_left = -30.0
+offset_top = -31.0
+offset_right = 30.0
+offset_bottom = -20.0
+theme_override_font_sizes/font_size = 8
+text = "Vírus"
+horizontal_alignment = 1
+mouse_filter = 2

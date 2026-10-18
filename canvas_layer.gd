@@ -20,6 +20,7 @@ var abrindo_pause: bool = false
 # REFERÊNCIAS
 # ==================================================
 
+@onready var tela_melhorias: Control = $TelaMelhorias
 @onready var menu: Control = $TextureRect/visor/Menu
 
 @onready var melhorias: Button = $TextureRect/visor/Menu/VBoxContainer/melhorias
@@ -44,6 +45,7 @@ func _ready():
 	# Permite que os botões recebam foco
 	melhorias.focus_mode = Control.FOCUS_ALL
 	armas.focus_mode = Control.FOCUS_ALL
+	melhorias.pressed.connect(abrir_melhorias)
 
 
 # ==================================================
@@ -51,7 +53,13 @@ func _ready():
 # ==================================================
 
 func _input(event):
-	if event.is_action_pressed("pause"):
+	if get_tree().has_group("dialogo_npc"):
+		return
+	if event.is_action_pressed("pause") and not event.is_echo():
+		if tela_melhorias.visible:
+			voltar_ao_menu()
+			get_viewport().set_input_as_handled()
+			return
 		
 		# Se o jogo NÃO está pausado, abre o pause
 		if not get_tree().paused:
@@ -112,6 +120,9 @@ func fechar_pause():
 	if not abrindo_pause:
 		return
 	
+	tela_melhorias.hide()
+	mao.show()
+	
 	# Diz que estamos fechando
 	abrindo_pause = false
 	
@@ -163,3 +174,18 @@ func _on_animated_sprite_2d_animation_finished():
 	
 	# Coloca o foco no botão Melhorias
 	melhorias.grab_focus()
+
+
+func abrir_melhorias():
+	menu.hide()
+	mao.hide()
+	tela_melhorias.show()
+	melhorias.release_focus()
+
+
+func voltar_ao_menu():
+	tela_melhorias.hide()
+	mao.show()
+	menu.show()
+	melhorias.grab_focus()
+

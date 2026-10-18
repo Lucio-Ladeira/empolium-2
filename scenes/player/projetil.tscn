@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/player/projetil.gd" id="1"]
+
+[node name="Projetil" type="Node2D" groups=["projeteis_player"]]
+z_index = 2
+script = ExtResource("1")

@@ -1,0 +1,64 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://os/apps/extras/extras.gd" id="1"]
+
+[node name="Extras" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Content"]
+layout_mode = 2
+text = "Extras"
+theme_override_colors/font_color = Color(0.91, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 22
+
+[node name="Subtitle" type="Label" parent="Content"]
+layout_mode = 2
+text = "Ferramentas e conteúdo adicional"
+theme_override_colors/font_color = Color(0.68, 0.79, 0.9, 1)
+
+[node name="Separator" type="HSeparator" parent="Content"]
+layout_mode = 2
+
+[node name="Diagnostics" type="Button" parent="Content"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "Diagnóstico do sistema"
+
+[node name="Archive" type="Button" parent="Content"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "Arquivo de Empolium"
+
+[node name="Hint" type="Label" parent="Content"]
+layout_mode = 2
+text = "Utilitários da sessão e informações do jogo."
+theme_override_colors/font_color = Color(0.5, 0.64, 0.79, 1)
+
+[node name="Details" type="Label" parent="Content"]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+text = "Escolha uma ferramenta para ver os detalhes."
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.79, 0.9, 1)
+
+[connection signal="pressed" from="Content/Diagnostics" to="." method="_on_diagnostics_pressed"]
+[connection signal="pressed" from="Content/Archive" to="." method="_on_archive_pressed"]

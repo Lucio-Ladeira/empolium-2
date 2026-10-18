@@ -1,0 +1,64 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/mapas/mapa.gd" id="1"]
+[ext_resource type="TileSet" path="res://scenes/mapas/chao.tres" id="2"]
+[ext_resource type="TileSet" path="res://scenes/mapas/parede.tres" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/menus/menu_de_pause.tscn" id="5"]
+[ext_resource type="Script" path="res://scenes/mapas/minimapa.gd" id="6"]
+[ext_resource type="PackedScene" path="res://effects/occlusion_outline/occlusion_outline.tscn" id="7"]
+
+[node name="Mapa" type="Node2D" groups=["mapas"]]
+y_sort_enabled = true
+script = ExtResource("1")
+
+[node name="Chao" type="TileMapLayer" parent="."]
+z_index = -2
+texture_filter = 1
+tile_set = ExtResource("2")
+
+[node name="Paredes" type="TileMapLayer" parent="."]
+y_sort_enabled = true
+position = Vector2(0, -24)
+texture_filter = 1
+tile_set = ExtResource("3")
+
+[node name="Navegacao" type="NavigationRegion2D" parent="."]
+
+[node name="Salas" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="player_base" parent="." instance=ExtResource("4")]
+
+[node name="Ambiente" type="CanvasModulate" parent="."]
+color = Color(0.68, 0.64, 0.79, 1)
+
+[node name="OcclusionOutline" parent="." instance=ExtResource("7")]
+world_path = NodePath("..")
+outline_sprite_paths = Array[NodePath]([NodePath("../player_base/sprites")])
+occluder_paths = Array[NodePath]([NodePath("../Paredes")])
+
+[node name="HUDMapa" type="CanvasLayer" parent="."]
+
+[node name="Minimapa" type="Control" parent="HUDMapa"]
+offset_left = 14.0
+offset_top = 47.0
+offset_right = 157.0
+offset_bottom = 157.0
+mouse_filter = 2
+script = ExtResource("6")
+
+[node name="Objetivo" type="Label" parent="HUDMapa"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -30.0
+offset_right = -12.0
+offset_bottom = -6.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 11
+mouse_filter = 2
+
+[node name="Pause" parent="." instance=ExtResource("5")]

@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[node name="About" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = 20.0
+offset_right = -22.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Content"]
+layout_mode = 2
+text = "Sobre o ambiente"
+theme_override_colors/font_color = Color(0.91, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 24
+
+[node name="Version" type="Label" parent="Content"]
+layout_mode = 2
+text = "Empolium 2 · Versão 0.1"
+theme_override_colors/font_color = Color(0.68, 0.79, 0.9, 1)
+
+[node name="Separator" type="HSeparator" parent="Content"]
+layout_mode = 2
+
+[node name="Text" type="Label" parent="Content"]
+layout_mode = 2
+text = "Este ambiente de trabalho acompanha Empolium 2. Aqui você pode abrir o jogo, acessar arquivos e ajustar suas preferências."
+autowrap_mode = 2
+
+[node name="Credits" type="Label" parent="Content"]
+layout_mode = 2
+text = "Feito para sua sessão de jogo."
+theme_override_colors/font_color = Color(0.5, 0.64, 0.79, 1)

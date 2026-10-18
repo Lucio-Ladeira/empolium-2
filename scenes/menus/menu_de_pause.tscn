@@ -23,6 +23,8 @@
 [ext_resource type="Texture2D" uid="uid://nk3ggbacjrdp" path="res://assets/visor/visor18.png" id="21_87wwo"]
 [ext_resource type="Texture2D" uid="uid://ctimoi4pnl26c" path="res://assets/visor/visor19.png" id="22_es5bv"]
 
+[ext_resource type="PackedScene" path="res://scenes/menus/tela_melhorias.tscn" id="23_melhorias"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dp0r8"]
 shader = ExtResource("2_d8wmj")
 shader_parameter/vhs_resolution = Vector2(320, 240)
@@ -230,4 +232,8 @@ grow_vertical = 2
 mouse_filter = 1
 color = Color(0, 0, 0, 0.50980395)
 
+[node name="TelaMelhorias" parent="CanvasLayer" instance=ExtResource("23_melhorias")]
+visible = false
+
 [connection signal="animation_finished" from="CanvasLayer/TextureRect/visor/AnimatedSprite2D" to="CanvasLayer" method="_on_animated_sprite_2d_animation_finished"]
+
