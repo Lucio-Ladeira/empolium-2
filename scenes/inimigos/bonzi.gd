@@ -31,6 +31,7 @@ var item_roubado: Dictionary = {}
 var item_solto: bool = false
 var drop_roubado: Node2D
 var surf_acertou: bool = false
+var flash_restante: float = 0.0
 const Catalogo = preload("res://scenes/itens/melhorias.gd")
 
 func configurar_arena(pos: Vector2, contorno: PackedVector2Array):
@@ -66,9 +67,14 @@ func _ready():
 	_criar_interface()
 
 func _physics_process(delta):
-	if acao == Acao.MORTO: return
+	if acao == Acao.MORTO:
+		flash_restante = maxf(0.0, flash_restante - delta)
+		_atualizar_cor_sprite()
+		return
+	flash_restante = maxf(0.0, flash_restante - delta)
 	if not is_instance_valid(jogador) or jogador.vida <= 0:
 		_liberar_jogador()
+		_atualizar_cor_sprite()
 		return
 	tempo -= delta
 	popup_tempo -= delta
@@ -117,6 +123,7 @@ func _physics_process(delta):
 					_soltar_item()
 					queue_redraw()
 					return
+				$Corpo.set_deferred("disabled",false)
 				if jogador.global_position.distance_to(global_position) < (38 if fase == 1 else 46):
 					jogador.dano(2, global_position.direction_to(jogador.global_position))
 				quedas += 1
@@ -155,7 +162,6 @@ func _physics_process(delta):
 			if tempo <= 0:
 				fase = 2
 				global_position = centro
-				sprite.modulate = Color(1.0,0.4,0.8)
 				_liberar_jogador()
 				_roubar_item()
 				acao = Acao.ROUBO
@@ -184,6 +190,7 @@ func _physics_process(delta):
 	elif acao == Acao.ROUBO: titulo.text = "HA HA HA! • " + ("ITEM ROUBADO" if not item_roubado.is_empty() else "NADA PARA ROUBAR")
 	elif acao == Acao.CAIDO: titulo.text = "BONZIBUDDY CAÍDO • DANO ×1,5"
 	elif acao == Acao.FURIA: titulo.text = "CUIDADO COM AS BANANAS!"
+	_atualizar_cor_sprite()
 	queue_redraw()
 
 func _subir():
@@ -217,6 +224,8 @@ func dano(valor: float, _direcao: Vector2 = Vector2.ZERO, _knockback: bool = tru
 	if acao == Acao.MORTO or valor <= 0: return
 	# O atalho de emergência continua podendo encerrar o encontro.
 	if acao in [Acao.CIPO,Acao.QUEDA,Acao.SURF] and valor < vida: return
+	flash_restante = 0.16
+	_atualizar_cor_sprite()
 	vida = maxf(0,vida-valor*(1.5 if acao == Acao.CAIDO else 1.0))
 	if vida <= 0:
 		acao = Acao.MORTO
@@ -248,6 +257,10 @@ func dano(valor: float, _direcao: Vector2 = Vector2.ZERO, _knockback: bool = tru
 		jogador.velocity = Vector2.ZERO
 
 		sprite.show()
+
+func _atualizar_cor_sprite():
+	var cor_normal = Color(1.0,0.4,0.8) if fase == 2 else Color(1.0,0.65,1.0)
+	sprite.modulate = Color(1.5,0.6,0.6) if flash_restante > 0.0 else cor_normal
 
 func _atualizar_cocos(delta):
 	for i in range(cocos.size()-1,-1,-1):

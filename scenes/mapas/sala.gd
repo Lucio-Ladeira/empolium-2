@@ -31,12 +31,19 @@ func configurar_area(poligono: PackedVector2Array):
 	area.add_child(forma)
 	add_child(area)
 	area.body_entered.connect(_entrada)
+	area.body_exited.connect(_saida)
 
 func _entrada(corpo: Node2D):
 	if corpo.is_in_group("player") and corpo.vida > 0:
 		visitada = true
-		get_parent().get_parent().sala_atual = indice
+		var mapa = get_parent().get_parent()
+		mapa.sala_atual = indice
+		mapa.tocar_musica(tipo)
 		iniciar.call_deferred(corpo)
+
+func _saida(corpo: Node2D):
+	if corpo.is_in_group("player") and corpo.vida > 0:
+		get_parent().get_parent().tocar_musica("normal")
 
 func iniciar(jogador: Node2D):
 	if estado != Estado.NAO_VISITADA or not is_instance_valid(jogador) or jogador.vida <= 0:

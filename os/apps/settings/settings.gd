@@ -2,8 +2,11 @@ extends Control
 
 @onready var fullscreen: CheckButton = $Margin/Content/Fullscreen
 @onready var volume: HSlider = $Margin/Content/Volume
+@onready var music_volume: HSlider = $Margin/Content/MusicVolume
 @onready var language: OptionButton = $Margin/Content/Language
 @onready var language_note: Label = $Margin/Content/LanguageNote
+
+const MUSIC_VOLUME_MIN_DB := -60.0
 
 func _ready() -> void:
     fullscreen.button_pressed = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
@@ -11,6 +14,10 @@ func _ready() -> void:
     if bus >= 0:
         var db: float = AudioServer.get_bus_volume_db(bus)
         volume.value = clampf(db + 50.0, 0.0, 100.0)
+    var music_bus: int = AudioServer.get_bus_index("Music")
+    if music_bus >= 0:
+        var music_db: float = AudioServer.get_bus_volume_db(music_bus)
+        music_volume.value = clampf((music_db - MUSIC_VOLUME_MIN_DB) * 100.0 / -MUSIC_VOLUME_MIN_DB, 0.0, 100.0)
     language.clear()
     language.add_item("Português (Brasil)")
     language.add_item("Idioma do sistema")
@@ -24,6 +31,11 @@ func _on_volume_value_changed(value: float) -> void:
     var bus: int = AudioServer.get_bus_index("Master")
     if bus >= 0:
         AudioServer.set_bus_volume_db(bus, value - 50.0)
+
+func _on_music_volume_value_changed(value: float) -> void:
+    var bus: int = AudioServer.get_bus_index("Music")
+    if bus >= 0:
+        AudioServer.set_bus_volume_db(bus, lerpf(MUSIC_VOLUME_MIN_DB, 0.0, value / 100.0))
 
 func _on_language_item_selected(index: int) -> void:
     if index == 0:

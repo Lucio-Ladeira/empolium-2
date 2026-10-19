@@ -88,6 +88,15 @@ custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 value = 50.0
 
+[node name="MusicVolumeLabel" type="Label" parent="Margin/Content"]
+layout_mode = 2
+text = "Volume da música"
+
+[node name="MusicVolume" type="HSlider" parent="Margin/Content"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+value = 70.0
+
 [node name="Info" type="Label" parent="Margin/Content"]
 layout_mode = 2
 text = "As mudanças entram em vigor na hora."
@@ -97,3 +106,4 @@ theme_override_colors/font_color = Color(0.5, 0.64, 0.79, 1)
 [connection signal="item_selected" from="Margin/Content/Language" to="." method="_on_language_item_selected"]
 [connection signal="toggled" from="Margin/Content/Fullscreen" to="." method="_on_fullscreen_toggled"]
 [connection signal="value_changed" from="Margin/Content/Volume" to="." method="_on_volume_value_changed"]
+[connection signal="value_changed" from="Margin/Content/MusicVolume" to="." method="_on_music_volume_value_changed"]

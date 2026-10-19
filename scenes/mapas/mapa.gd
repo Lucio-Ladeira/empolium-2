@@ -11,6 +11,18 @@ var obstaculos_caixas: Array[PackedVector2Array] = []
 const Sala = preload("res://scenes/mapas/sala.gd")
 const Portal = preload("res://scenes/mapas/portal.gd")
 const NOMES = {"inicio": "ENTRADA", "combate": "SEGURANÇA", "npc": "APOIO", "loja": "LOJA", "boss": "NÚCLEO", "portal": "SAÍDA"}
+const DURACAO_FADE_MUSICA := 0.35
+const VOLUME_FADE_MUSICA := -40.0
+const MUSICAS = {
+	"inicio": preload("res://assets/audio/music/EMPOLIUM2_Spawn_Room.mp3"),
+	"combate": preload("res://assets/audio/music/EMPOLIUM2_normal_room.mp3"),
+	"boss": preload("res://assets/audio/music/EMPOLIUM2_Battle.mp3"),
+	"npc": preload("res://assets/audio/music/EMPOLIUM2_healing_room.mp3"),
+	"loja": preload("res://assets/audio/music/EMPOLIUM2_Shop_Room.mp3"),
+	"portal": preload("res://assets/audio/music/EMPOLIUM2_normal_room.mp3"),
+	"normal": preload("res://assets/audio/music/EMPOLIUM2_normal_room.mp3"),
+	"creditos": preload("res://assets/audio/music/EMPOLIUM2_Credits.mp3"),
+}
 const DIRECOES = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 @export var seed_mapa: int = 0 # Zero sorteia; qualquer outro valor reproduz o mapa.
 @export_range(2, 6) var combates_min: int = 3
@@ -35,6 +47,9 @@ var gerando: bool = false
 var tempo_partida: float = 0.0
 var partida_concluida: bool = false
 var portal: Node2D
+var musica: AudioStreamPlayer
+var faixa_solicitada: AudioStreamMP3
+var transicao_musica: Tween
 var rng = RandomNumberGenerator.new()
 @onready var chao: TileMapLayer = $Chao
 @onready var paredes: TileMapLayer = $Paredes
@@ -44,6 +59,11 @@ var rng = RandomNumberGenerator.new()
 @onready var resultado: Label = $HUDMapa/Resultado
 
 func _ready():
+	musica = AudioStreamPlayer.new()
+	musica.name = "Musica"
+	musica.bus = "Music"
+	musica.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(musica)
 	interacao = Interacao.new()
 	add_child(interacao)
 	limites = StaticBody2D.new()
@@ -63,9 +83,40 @@ func _formatar_tempo(segundos: float) -> String:
 	var total = floori(segundos)
 	return "%02d:%02d" % [floori(float(total) / 60.0), total % 60]
 
+func tocar_musica(tipo: String) -> void:
+	var faixa: AudioStreamMP3 = MUSICAS.get(tipo, MUSICAS["normal"])
+	if faixa_solicitada == faixa: return
+	faixa_solicitada = faixa
+	if is_instance_valid(transicao_musica) and transicao_musica.is_running():
+		transicao_musica.kill()
+	if musica.stream == faixa and musica.playing:
+		transicao_musica = _criar_fade_musica(0.0)
+		return
+	if musica.playing:
+		transicao_musica = _criar_fade_musica(VOLUME_FADE_MUSICA)
+		transicao_musica.tween_callback(_iniciar_faixa.bind(faixa))
+	else:
+		_iniciar_faixa(faixa)
+
+func _criar_fade_musica(volume_alvo: float) -> Tween:
+	var tween := create_tween()
+	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(musica, "volume_db", volume_alvo, DURACAO_FADE_MUSICA)
+	return tween
+
+func _iniciar_faixa(faixa: AudioStreamMP3) -> void:
+	faixa.loop = true
+	musica.stream = faixa
+	musica.volume_db = VOLUME_FADE_MUSICA
+	musica.play()
+	transicao_musica = _criar_fade_musica(0.0)
+
 func gerar(seed_nova: int = 0):
 	if gerando:
 		return
+	tocar_musica("inicio")
 	interacao.fechar()
 	gerando = true
 	objetivo.hide()
@@ -321,6 +372,7 @@ func validar_conectividade() -> bool:
 func _sala_concluida(_sala):
 	_atualizar_objetivo()
 	if arena_final:
+		tocar_musica("creditos")
 		partida_concluida = true
 		var pontuacao = floori(tempo_partida)
 		resultado.text = "PARTIDA CONCLUÍDA\nTEMPO %s\nPONTUAÇÃO %d" % [_formatar_tempo(tempo_partida), pontuacao]

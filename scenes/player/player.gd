@@ -173,11 +173,12 @@ func _physics_process(_delta: float) -> void:
 
 func move() -> void:
 	# O ataque só pode ser iniciado enquanto o personagem está em MOVE.
-	if Input.is_action_just_pressed("attack"):
+	var mouse_sobre_interface = get_viewport().gui_get_hovered_control() != null
+	if Input.is_action_just_pressed("attack") and not mouse_sobre_interface:
 		iniciar_ataque()
 		return
 
-	if Input.is_action_pressed("shoot"):
+	if Input.is_action_pressed("shoot") and not mouse_sobre_interface:
 		atirar()
 
 	var direction: Vector2 = Input.get_vector(
