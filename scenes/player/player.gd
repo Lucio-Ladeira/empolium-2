@@ -4,6 +4,7 @@ signal melhorias_alteradas
 const Catalogo = preload("res://scenes/itens/melhorias.gd")
 var moedas: int = 0
 var controle_bloqueado: bool = false
+var tempo_escorregao: float = 0.0
 var inventario: Array[int] = [0, 0, 0, 0, 0]
 var equipados: Array[int] = []
 var vida_maxima: int = 5
@@ -134,6 +135,14 @@ func _physics_process(_delta: float) -> void:
 		label.text = "Derrotado! Retorno em %.1f" % maxf(0.0, restante_respawn)
 		if restante_respawn <= 0:
 			respawn()
+		return
+	if tempo_escorregao > 0:
+		tempo_escorregao = maxf(0,tempo_escorregao-_delta)
+		velocity = last_direction * 30.0 * tempo_escorregao / 3.0
+		move_and_slide()
+		if tempo_escorregao <= 0:
+			$sprites.rotation = 0
+			current_state = PlayerState.MOVE
 		return
 	if current_state == PlayerState.ATTACK:
 		for corpo in $dano.get_overlapping_bodies():
@@ -312,6 +321,8 @@ func recuar(delta: float) -> void:
 
 
 func morre() -> void:
+	tempo_escorregao = 0
+	$sprites.rotation = 0
 	recuo_restante = 0.0
 	avanco_restante = 0.0
 	restante_respawn = tempo_respawn
@@ -364,6 +375,8 @@ func _atingir_inimigo(corpo: Node2D) -> void:
 			corpo.dano(multiplicador_dano, global_position.direction_to(corpo.global_position) if not global_position.is_equal_approx(corpo.global_position) else last_direction)
 
 func respawn() -> void:
+	tempo_escorregao = 0
+	$sprites.rotation = 0
 	controle_bloqueado = false
 	tiro_restante = 0.0
 	get_tree().call_group("projeteis_player", "queue_free")
@@ -454,3 +467,15 @@ func recalcular_melhorias():
 
 
 
+
+func escorregar():
+	if vida <= 0 or tempo_escorregao > 0 or controle_bloqueado: return
+	tempo_escorregao = 3.0
+	current_state = PlayerState.MOVE
+	velocity = Vector2.ZERO
+	dash_timer.stop()
+	avanco_restante = 0
+	recuo_restante = 0
+	$dano/CollisionShape2D.set_deferred("disabled",true)
+	anim_state.start("idle",true)
+	$sprites.rotation = -PI*0.5

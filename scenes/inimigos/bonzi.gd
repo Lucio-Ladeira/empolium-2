@@ -1,7 +1,7 @@
 extends CharacterBody2D
 signal derrotado
 
-enum Acao { ESPERA, CIPO, QUEDA, PAUSA, COCOS, ARREMESSO, SURF, MORTO }
+enum Acao { ESPERA, CIPO, QUEDA, PAUSA, COCOS, ARREMESSO, SURF, ROUBO, FURIA, CAIDO, MORTO }
 var vida_maxima: float = 60.0
 var vida: float = 60.0
 var fase: int = 1
@@ -26,6 +26,12 @@ var titulo: Label
 var popups: Array[Control] = []
 var rng = RandomNumberGenerator.new()
 var concluido: bool = false
+var bananas: Array[Dictionary] = []
+var item_roubado: Dictionary = {}
+var item_solto: bool = false
+var drop_roubado: Node2D
+var surf_acertou: bool = false
+const Catalogo = preload("res://scenes/itens/melhorias.gd")
 
 func configurar_arena(pos: Vector2, contorno: PackedVector2Array):
 	centro = pos
@@ -68,12 +74,17 @@ func _physics_process(delta):
 	popup_tempo -= delta
 	if popup_tempo <= 0:
 		_popup()
-		popup_tempo = 7.0 if fase == 1 else 4.5
+		popup_tempo = (7.0 / 1.5) if fase == 1 else 4.5
 	_atualizar_cocos(delta)
+	_atualizar_bananas(delta)
 	match acao:
 		Acao.ESPERA:
 			if tempo <= 0:
-				if ciclo % 2 == 0:
+				if fase == 2 and ciclo % 3 == 2:
+					acao = Acao.FURIA
+					tempo = 1.4
+					_espalhar_bananas()
+				elif ciclo % 2 == 0:
 					quedas = 0
 					_subir()
 				else:
@@ -92,6 +103,20 @@ func _physics_process(delta):
 			altura = 280.0 * maxf(0,tempo) / 0.25
 			if tempo <= 0:
 				altura = 0
+				var casca = -1
+				for i in range(bananas.size()):
+					if global_position.distance_to(bananas[i].pos) < 24:
+						casca = i
+						break
+				if casca >= 0:
+					bananas.remove_at(casca)
+					acao = Acao.CAIDO
+					tempo = 5.0
+					sprite.rotation = -PI*0.5
+					$Corpo.set_deferred("disabled",false)
+					_soltar_item()
+					queue_redraw()
+					return
 				if jogador.global_position.distance_to(global_position) < (38 if fase == 1 else 46):
 					jogador.dano(2, global_position.direction_to(jogador.global_position))
 				quedas += 1
@@ -115,18 +140,50 @@ func _physics_process(delta):
 				tempo = 0.34 if fase == 1 else 0.23
 				if lancados >= (3 if fase == 1 else 5): _descansar()
 		Acao.SURF:
-			var progresso = clampf(1.0-tempo/2.4,0,1)
-			global_position = alvo_surf + Vector2(lerpf(-480,480,progresso),-30-sin(progresso*PI)*45)
+			if tempo > 1.6:
+				global_position = centro
+			else:
+				_liberar_jogador()
+				var progresso = clampf(1.0-tempo/1.6,0,1)
+				var anterior = global_position
+				global_position = alvo_surf + Vector2(lerpf(-480,480,progresso),0)
+				if progresso > 0.02 and not surf_acertou:
+					var perto = Geometry2D.get_closest_point_to_segment(jogador.global_position,anterior,global_position)
+					if perto.distance_to(jogador.global_position) < 24:
+						jogador.dano(2,Vector2.RIGHT)
+						surf_acertou = true
 			if tempo <= 0:
 				fase = 2
+				global_position = centro
 				sprite.modulate = Color(1.0,0.4,0.8)
 				_liberar_jogador()
+				_roubar_item()
+				acao = Acao.ROUBO
+				tempo = 2.0
+				$Corpo.set_deferred("disabled",false)
+		Acao.ROUBO:
+			sprite.position.x = sin(tempo*20)*3
+			if tempo <= 0:
+				sprite.position.x = 0
+				_descansar()
+		Acao.FURIA:
+			sprite.position.x = sin(tempo*30)*3
+			if tempo <= 0:
+				sprite.position.x = 0
+				_descansar()
+		Acao.CAIDO:
+			if tempo <= 0:
+				sprite.rotation = 0
 				_descansar()
 	sprite.position.y = 10-altura
 	sprite.visible = altura < 220
 	if acao != Acao.SURF: sprite.flip_h = jogador.global_position.x < global_position.x
 	barra.value = vida
-	titulo.text = "BONZIBUDDY • FASE %d" % fase if acao != Acao.SURF else "BONZIBUDDY • SEGUNDA FASE"
+	titulo.text = "BONZIBUDDY • FASE %d" % fase
+	if acao == Acao.SURF: titulo.text = "CUIDADO • INVESTIDA DE SURF"
+	elif acao == Acao.ROUBO: titulo.text = "HA HA HA! • " + ("ITEM ROUBADO" if not item_roubado.is_empty() else "NADA PARA ROUBAR")
+	elif acao == Acao.CAIDO: titulo.text = "BONZIBUDDY CAÍDO • DANO ×1,5"
+	elif acao == Acao.FURIA: titulo.text = "CUIDADO COM AS BANANAS!"
 	queue_redraw()
 
 func _subir():
@@ -160,10 +217,13 @@ func dano(valor: float, _direcao: Vector2 = Vector2.ZERO, _knockback: bool = tru
 	if acao == Acao.MORTO or valor <= 0: return
 	# O atalho de emergência continua podendo encerrar o encontro.
 	if acao in [Acao.CIPO,Acao.QUEDA,Acao.SURF] and valor < vida: return
-	vida = maxf(0,vida-valor)
+	vida = maxf(0,vida-valor*(1.5 if acao == Acao.CAIDO else 1.0))
 	if vida <= 0:
 		acao = Acao.MORTO
 		concluido = true
+		_soltar_item()
+		bananas.clear()
+		sprite.rotation = 0
 		_liberar_jogador()
 		cocos.clear()
 		for janela in popups:
@@ -183,9 +243,10 @@ func dano(valor: float, _direcao: Vector2 = Vector2.ZERO, _knockback: bool = tru
 		cocos.clear()
 		$Corpo.set_deferred("disabled",true)
 		alvo_surf = jogador.global_position
+		surf_acertou = false
 		jogador.controle_bloqueado = true
 		jogador.velocity = Vector2.ZERO
-		jogador.invulnerabilidade = maxf(jogador.invulnerabilidade,3.0)
+
 		sprite.show()
 
 func _atualizar_cocos(delta):
@@ -204,6 +265,15 @@ func _atualizar_cocos(delta):
 
 func _draw():
 	if acao == Acao.MORTO: return
+	for casca in bananas:
+		var pos = to_local(casca.pos)
+		draw_arc(pos,7,0.15,PI-0.15,10,Color(1,0.85,0.15,0.5 if casca.aviso > 0 else 1),3)
+		draw_line(pos+Vector2(-6,1),pos+Vector2(-9,-4),Color("fff09a"),2)
+	if acao == Acao.ROUBO and not item_roubado.is_empty():
+		draw_texture_rect(Catalogo.icone(item_roubado.tipo,item_roubado.get("chip",0)),Rect2(-12,-80,24,28),false)
+	if acao == Acao.SURF and tempo > 1.6:
+		var aviso = to_local(alvo_surf)
+		draw_line(aviso-Vector2(220,0),aviso+Vector2(220,0),Color(0.2,0.9,1,0.7),3)
 	for coco in cocos: _desenhar_coco(to_local(coco.pos))
 	if acao == Acao.COCOS:
 		for i in range(3):
@@ -294,9 +364,66 @@ func _liberar_jogador():
 
 func _exit_tree():
 	_liberar_jogador()
+	if not item_roubado.is_empty() and is_instance_valid(jogador):
+		jogador.coletar_drop(item_roubado)
+		if is_instance_valid(drop_roubado): drop_roubado.queue_free()
+		item_roubado.clear()
 
 func _notification(aviso):
 	if not is_instance_valid(raiz_ui): return
 	if aviso == NOTIFICATION_PAUSED: raiz_ui.hide()
 	elif aviso == NOTIFICATION_UNPAUSED: raiz_ui.show()
 
+
+func _roubar_item():
+	var chip = -1
+	if not jogador.equipados.is_empty():
+		chip = jogador.equipados[0]
+		jogador.equipados.remove_at(0)
+	else:
+		for i in range(jogador.inventario.size()):
+			if jogador.inventario[i] > 0:
+				chip = i
+				break
+	if chip >= 0:
+		jogador.inventario[chip] -= 1
+		jogador.recalcular_melhorias()
+		item_roubado = {"tipo":"chip","chip":chip,"quantidade":1}
+	elif jogador.moedas > 0:
+		jogador.moedas -= 1
+		jogador.moedas_label.text = str(jogador.moedas)
+		item_roubado = {"tipo":"moeda","quantidade":1}
+
+func _soltar_item():
+	if item_roubado.is_empty() or item_solto: return
+	item_solto = true
+	drop_roubado = preload("res://scenes/itens/drop.gd").new()
+	drop_roubado.dados = item_roubado.duplicate()
+	# O item do jogador permanece recuperável até o fim da tentativa.
+	drop_roubado.tempo_restante = INF
+	drop_roubado.position = get_parent().to_local(global_position+Vector2(0,25))
+	drop_roubado.recolhido.connect(func(): item_roubado.clear())
+	get_parent().add_child.call_deferred(drop_roubado)
+
+func _espalhar_bananas():
+	if jogador.global_position.distance_to(global_position) < 140:
+		jogador.direcao_recuo = global_position.direction_to(jogador.global_position)
+		jogador.recuo_restante = 0.35
+		jogador.current_state = jogador.PlayerState.HURT
+		jogador.get_node("dano/CollisionShape2D").set_deferred("disabled",true)
+	for i in range(7):
+		var angulo = i*TAU/7 + rng.randf_range(-0.2,0.2)
+		var pos = _dentro_arena(centro+Vector2(cos(angulo)*rng.randf_range(50,140),sin(angulo)*rng.randf_range(35,90)))
+		bananas.append({"pos":pos,"aviso":0.9,"vida":35.0})
+	while bananas.size() > 18: bananas.pop_front()
+
+func _atualizar_bananas(delta):
+	for i in range(bananas.size()-1,-1,-1):
+		var casca = bananas[i]
+		casca.aviso -= delta
+		casca.vida -= delta
+		if casca.vida <= 0:
+			bananas.remove_at(i)
+		elif casca.aviso <= 0 and jogador.tempo_escorregao <= 0 and not jogador.controle_bloqueado and jogador.global_position.distance_to(casca.pos) < 12:
+			jogador.escorregar()
+			bananas.remove_at(i)

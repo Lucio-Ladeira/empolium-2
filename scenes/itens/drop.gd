@@ -1,4 +1,5 @@
 extends Node2D
+signal recolhido
 
 const Catalogo = preload("res://scenes/itens/melhorias.gd")
 var dados: Dictionary
@@ -54,4 +55,5 @@ func _physics_process(delta):
 		return
 	if jogador.coletar_drop(dados):
 		coletado = true
+		recolhido.emit()
 		queue_free()
