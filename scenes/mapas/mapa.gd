@@ -32,12 +32,16 @@ var ligacoes: Array[Vector2i] = []
 var piso: Dictionary = {}
 var areas: Array[Rect2i] = []
 var gerando: bool = false
+var tempo_partida: float = 0.0
+var partida_concluida: bool = false
 var portal: Node2D
 var rng = RandomNumberGenerator.new()
 @onready var chao: TileMapLayer = $Chao
 @onready var paredes: TileMapLayer = $Paredes
 @onready var jogador = $player_base
 @onready var objetivo: Label = $HUDMapa/Objetivo
+@onready var tempo_label: Label = $HUDMapa/Tempo
+@onready var resultado: Label = $HUDMapa/Resultado
 
 func _ready():
 	interacao = Interacao.new()
@@ -49,6 +53,15 @@ func _ready():
 	add_child(limites)
 	RenderingServer.set_default_clear_color(Color("171421"))
 	gerar(seed_mapa)
+
+func _process(delta: float) -> void:
+	if partida_concluida: return
+	tempo_partida += delta
+	tempo_label.text = "TEMPO %s" % _formatar_tempo(tempo_partida)
+
+func _formatar_tempo(segundos: float) -> String:
+	var total = floori(segundos)
+	return "%02d:%02d" % [floori(float(total) / 60.0), total % 60]
 
 func gerar(seed_nova: int = 0):
 	if gerando:
@@ -308,8 +321,11 @@ func validar_conectividade() -> bool:
 func _sala_concluida(_sala):
 	_atualizar_objetivo()
 	if arena_final:
-		objetivo.text = "BonziBuddy derrotado • Arena concluída"
-		objetivo.show()
+		partida_concluida = true
+		var pontuacao = floori(tempo_partida)
+		resultado.text = "PARTIDA CONCLUÍDA\nTEMPO %s\nPONTUAÇÃO %d" % [_formatar_tempo(tempo_partida), pontuacao]
+		resultado.show()
+		get_tree().paused = true
 
 func _atualizar_objetivo():
 	var restantes = salas.filter(func(s): return s.tipo in ["combate", "boss"] and s.estado != Sala.Estado.CONCLUIDA).size()

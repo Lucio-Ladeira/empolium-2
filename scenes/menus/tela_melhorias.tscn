@@ -12,7 +12,10 @@ void fragment() {
 	vec2 pixel = UV / TEXTURE_PIXEL_SIZE;
 	// Preserva os textos pretos dentro do visor desta arte de 960 x 540.
 	bool dentro_do_visor = pixel.x >= 342.0 && pixel.x < 561.0 && pixel.y >= 360.0 && pixel.y < 469.0;
-	if (!dentro_do_visor && max(max(arte.r, arte.g), arte.b) < 0.01) {
+	bool janela_animada = pixel.x >= 292.0 && pixel.x < 668.0 && pixel.y >= 16.0 && pixel.y < 264.0;
+	if (janela_animada) {
+		arte.a = 0.0;
+	} else if (!dentro_do_visor && max(max(arte.r, arte.g), arte.b) < 0.01) {
 		arte.a = 0.0;
 	}
 	COLOR = arte;
@@ -34,6 +37,10 @@ border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(1, 0.88, 0.5, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_janela"]
+atlas = ExtResource("1_tela")
+region = Rect2(292, 16, 376, 248)
 
 [node name="TelaMelhorias" type="Control"]
 script = ExtResource("2_slots")
@@ -58,6 +65,24 @@ mouse_filter = 2
 texture = ExtResource("1_tela")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="JanelaMelhorias" type="Control" parent="."]
+z_index = -1
+layout_mode = 0
+offset_right = 960.0
+offset_bottom = 540.0
+mouse_filter = 2
+
+[node name="ArteJanela" type="TextureRect" parent="JanelaMelhorias"]
+layout_mode = 0
+offset_left = 292.0
+offset_top = 16.0
+offset_right = 668.0
+offset_bottom = 264.0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_janela")
+expand_mode = 1
+stretch_mode = 0
 
 
 [node name="ControlesBraco" type="Control" parent="."]

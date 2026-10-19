@@ -9,6 +9,7 @@ var descricao: Label
 var equipar: Button
 var mensagem: String = ""
 @onready var controles: Control = $ControlesBraco
+@onready var janela: Control = $JanelaMelhorias
 @onready var slots: Array[Button] = [$ControlesBraco/Slot1, $ControlesBraco/Slot2, $ControlesBraco/Slot3]
 
 func estilo_arte(botao: Button, nome: String, selecionavel: bool = false):
@@ -33,7 +34,7 @@ func _ready():
 	$ControlesBraco/Anterior.pressed.connect(mudar_pagina.bind(-1))
 	$ControlesBraco/Proximo.pressed.connect(mudar_pagina.bind(1))
 	for i in range(6):
-		var botao = criar_botao(Vector2(327 + (i % 2) * 63, 51 + (i / 2) * 63), Vector2(50, 50))
+		var botao = criar_botao(Vector2(327 + (i % 2) * 63, 51 + (i / 2) * 63), Vector2(50, 50), janela)
 		botao.pressed.connect(remover.bind(i))
 		equipamentos.append(botao)
 	equipar = criar_botao(Vector2(352, 430), Vector2(97, 28))
@@ -49,7 +50,7 @@ func _ready():
 	descricao.add_theme_font_size_override("font_size", 12)
 	descricao.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	descricao.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	controles.add_child(descricao)
+	janela.add_child(descricao)
 	if is_instance_valid(jogador):
 		jogador.melhorias_alteradas.connect(atualizar_slots)
 	visibility_changed.connect(atualizar_slots)
@@ -57,7 +58,7 @@ func _ready():
 	ajustar_controles()
 	atualizar_slots()
 
-func criar_botao(pos: Vector2, tamanho: Vector2) -> Button:
+func criar_botao(pos: Vector2, tamanho: Vector2, pai: Control = null) -> Button:
 	var botao = Button.new()
 	botao.position = pos
 	botao.size = tamanho
@@ -67,13 +68,29 @@ func criar_botao(pos: Vector2, tamanho: Vector2) -> Button:
 	for estilo in ["normal", "disabled"]:
 		botao.add_theme_stylebox_override(estilo, slots[0].get_theme_stylebox("normal"))
 	botao.add_theme_stylebox_override("hover", slots[0].get_theme_stylebox("hover"))
-	controles.add_child(botao)
+	(pai if pai != null else controles).add_child(botao)
 	return botao
 
 func ajustar_controles():
 	var fator = minf(size.x / 960.0, size.y / 540.0)
-	controles.scale = Vector2.ONE * fator
-	controles.position = (size - Vector2(960, 540) * fator) / 2.0
+	for controle in [controles, janela]:
+		controle.scale = Vector2.ONE * fator
+		controle.position = (size - Vector2(960, 540) * fator) / 2.0
+
+func animar_janela(abrir: bool) -> void:
+	var destino = controles.position
+	var deslocamento = Vector2(0, janela.size.y * janela.scale.y * 0.56)
+	if abrir:
+		janela.position = destino + deslocamento
+		janela.show()
+	else:
+		destino += deslocamento
+	var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT if abrir else Tween.EASE_IN)
+	tween.tween_property(janela, "position", destino, 0.7)
+	await tween.finished
+	if not abrir:
+		janela.hide()
 
 func mudar_pagina(direcao: int):
 	pagina = posmod(pagina + direcao, 2)
