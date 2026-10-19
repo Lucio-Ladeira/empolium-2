@@ -25,6 +25,7 @@ const DIRECOES = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 @export var cena_vendedor: PackedScene
 var seed_atual: int
 var etapa: int = 1
+var arena_final: bool = false
 var sala_atual: int = 0
 var salas: Array = []
 var ligacoes: Array[Vector2i] = []
@@ -54,9 +55,11 @@ func gerar(seed_nova: int = 0):
 		return
 	interacao.fechar()
 	gerando = true
+	objetivo.hide()
 	jogador.set_physics_process(false)
 	get_tree().call_group("projeteis_player", "queue_free")
 	get_tree().call_group("drops", "queue_free")
+	portal = null
 	for filho in $Salas.get_children():
 		filho.free()
 	sala_atual = 0
@@ -76,32 +79,38 @@ func gerar(seed_nova: int = 0):
 	else:
 		seed_atual = seed_nova
 	rng.seed = seed_atual
-	var quantidade = rng.randi_range(clampi(combates_min, 2, 6), clampi(maxi(combates_max, combates_min), 2, 6))
-	var celula = Vector2i.ZERO
-	_adicionar_sala("inicio", celula)
-	salas[0].visitada = true
-	# Caminho principal monotônico: não cruza a si mesmo nem sobrepõe salas.
-	for i in range(quantidade + 2):
-		celula += Vector2i.RIGHT if rng.randf() < 0.5 else Vector2i.DOWN
-		var tipo = "combate" if i < quantidade else "boss" if i == quantidade else "portal"
-		_adicionar_sala(tipo, celula)
-		ligacoes.append(Vector2i(i, i + 1))
-	# Sorteia entre todas as posições livres ligadas a salas de combate.
-	var bases_especiais: Array[int] = []
-	for tipo in ["npc", "loja"]:
-		var opcoes: Array = []
-		for base in range(1, quantidade + 1):
-			if base in bases_especiais: continue
-			for dir in DIRECOES:
-				var candidata: Vector2i = salas[base].celula + dir
-				if salas.any(func(s): return s.celula == candidata): continue
-				var perto_final = salas.any(func(s): return s.tipo in ["boss", "portal"] and absi(s.celula.x-candidata.x) + absi(s.celula.y-candidata.y) <= 1)
-				if not perto_final: opcoes.append({"base": base, "celula": candidata})
-		if not opcoes.is_empty():
-			var escolha = opcoes[rng.randi_range(0, opcoes.size()-1)]
-			bases_especiais.append(escolha.base)
-			_adicionar_sala(tipo, escolha.celula)
-			ligacoes.append(Vector2i(escolha.base, salas.size()-1))
+	if arena_final:
+		_adicionar_sala("inicio", Vector2i.ZERO)
+		salas[0].visitada = true
+		_adicionar_sala("boss", Vector2i.RIGHT)
+		ligacoes.append(Vector2i(0,1))
+	else:
+		var quantidade = rng.randi_range(clampi(combates_min, 2, 6), clampi(maxi(combates_max, combates_min), 2, 6))
+		var celula = Vector2i.ZERO
+		_adicionar_sala("inicio", celula)
+		salas[0].visitada = true
+		# Caminho principal monotônico: não cruza a si mesmo nem sobrepõe salas.
+		for i in range(quantidade + 2):
+			celula += Vector2i.RIGHT if rng.randf() < 0.5 else Vector2i.DOWN
+			var tipo = "combate" if i < quantidade else "boss" if i == quantidade else "portal"
+			_adicionar_sala(tipo, celula)
+			ligacoes.append(Vector2i(i, i + 1))
+		# Sorteia entre todas as posições livres ligadas a salas de combate.
+		var bases_especiais: Array[int] = []
+		for tipo in ["npc", "loja"]:
+			var opcoes: Array = []
+			for base in range(1, quantidade + 1):
+				if base in bases_especiais: continue
+				for dir in DIRECOES:
+					var candidata: Vector2i = salas[base].celula + dir
+					if salas.any(func(s): return s.celula == candidata): continue
+					var perto_final = salas.any(func(s): return s.tipo in ["boss", "portal"] and absi(s.celula.x-candidata.x) + absi(s.celula.y-candidata.y) <= 1)
+					if not perto_final: opcoes.append({"base": base, "celula": candidata})
+			if not opcoes.is_empty():
+				var escolha = opcoes[rng.randi_range(0, opcoes.size()-1)]
+				bases_especiais.append(escolha.base)
+				_adicionar_sala(tipo, escolha.celula)
+				ligacoes.append(Vector2i(escolha.base, salas.size()-1))
 	for sala in salas:
 		_preencher(sala.retangulo)
 	for par in ligacoes:
@@ -136,16 +145,14 @@ func gerar(seed_nova: int = 0):
 	chao.update_internals()
 	paredes.update_internals()
 	_criar_limites()
-	_criar_navegacao()
-	NavigationServer2D.map_force_update(get_world_2d().navigation_map)
 	var combates = salas.filter(func(s): return s.tipo in ["combate", "boss"])
 	var candidatos_hordas = combates.duplicate()
-	if etapa == 2:
+	if etapa == 2 and not arena_final:
 		for i in range(maxi(1, combates.size() / 2)):
 			var indice = rng.randi_range(0, candidatos_hordas.size()-1)
 			candidatos_hordas[indice].hordas_extras = 1
 			candidatos_hordas.remove_at(indice)
-	elif etapa == 3:
+	elif etapa == 3 and not arena_final:
 		for sala in combates: sala.hordas_extras = 2
 	for sala in salas:
 		_montar_sala(sala)
@@ -231,7 +238,9 @@ func _montar_sala(sala):
 		for i in range(rng.randi_range(clampi(inimigos_min, 1, 6), clampi(maxi(inimigos_min, inimigos_max), 1, 6))):
 			sala.encontro.append(tipos_inimigos[rng.randi_range(0, tipos_inimigos.size()-1)])
 	elif sala.tipo == "boss":
-		if cena_boss:
+		if arena_final:
+			sala.encontro.append(preload("res://scenes/inimigos/bonzi.tscn"))
+		elif cena_boss:
 			sala.encontro.append(cena_boss)
 		else:
 			sala.encontro.assign([preload("res://scenes/inimigos/inimigo.tscn"), preload("res://scenes/inimigos/virus.tscn")])
@@ -298,10 +307,13 @@ func validar_conectividade() -> bool:
 
 func _sala_concluida(_sala):
 	_atualizar_objetivo()
+	if arena_final:
+		objetivo.text = "BonziBuddy derrotado • Arena concluída"
+		objetivo.show()
 
 func _atualizar_objetivo():
 	var restantes = salas.filter(func(s): return s.tipo in ["combate", "boss"] and s.estado != Sala.Estado.CONCLUIDA).size()
-	if is_instance_valid(portal): portal.ativo = restantes == 0 and etapa < 3
+	if is_instance_valid(portal): portal.ativo = restantes == 0 and not arena_final
 	if is_instance_valid(portal): portal.ultima_etapa = etapa == 3 and restantes == 0
 	objetivo.text = "Setor %d • %d encontros restantes • M: mapa" % [etapa, restantes] if restantes > 0 else "Setor %d concluído • Vá à SAÍDA e pressione E • M: mapa" % etapa
 
@@ -312,8 +324,9 @@ func reiniciar_encontros():
 	_atualizar_objetivo()
 
 func _avancar():
-	if gerando or etapa >= 3: return
-	etapa += 1
+	if gerando or arena_final: return
+	if etapa == 3: arena_final = true
+	else: etapa += 1
 	gerar.call_deferred(seed_atual + 1)
 
 func _criar_portas():
@@ -335,6 +348,7 @@ func _criar_portas():
 			sala.adicionar_porta(_poligono(Rect2i(canto,tamanho)))
 
 func _decorar_sala(sala):
+	if arena_final: return
 	var ocupadas: Array[Vector2] = []
 	var quantidade = rng.randi_range(2, 6)
 	var centro = sala.retangulo.get_center()
@@ -399,7 +413,10 @@ func _unhandled_key_input(event: InputEvent):
 	if not event is InputEventKey or not event.pressed or event.echo: return
 	if not event.ctrl_pressed or event.alt_pressed or event.shift_pressed: return
 	if gerando or get_tree().paused or jogador.vida <= 0: return
-	if event.physical_keycode == KEY_K:
+	if event.physical_keycode == KEY_P:
+		_avancar()
+		get_viewport().set_input_as_handled()
+	elif event.physical_keycode == KEY_K:
 		if sala_atual >= 0 and sala_atual < salas.size():
 			salas[sala_atual].limpar_por_atalho()
 		get_viewport().set_input_as_handled()
@@ -407,3 +424,4 @@ func _unhandled_key_input(event: InputEvent):
 		jogador.invulnerabilidade = 0.0
 		jogador.dano(jogador.vida)
 		get_viewport().set_input_as_handled()
+

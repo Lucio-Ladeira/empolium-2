@@ -82,6 +82,8 @@ func _spawnar_horda():
 		inimigo.position = to_local(pos)
 		inimigo.derrotado.connect(_derrotado.bind(inimigo), CONNECT_ONE_SHOT)
 		add_child(inimigo)
+		if inimigo.has_method("configurar_arena"):
+			inimigo.configurar_arena(mapa.ponto_personagem(retangulo.get_center()), mapa._poligono(retangulo.grow(-3),Vector2(0,-12)))
 		vivos.append(inimigo)
 		criados.append(inimigo)
 	ultimos_spawns = escolhidos

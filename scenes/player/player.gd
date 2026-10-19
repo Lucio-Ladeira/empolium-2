@@ -3,6 +3,7 @@ extends CharacterBody2D
 signal melhorias_alteradas
 const Catalogo = preload("res://scenes/itens/melhorias.gd")
 var moedas: int = 0
+var controle_bloqueado: bool = false
 var inventario: Array[int] = [0, 0, 0, 0, 0]
 var equipados: Array[int] = []
 var vida_maxima: int = 5
@@ -69,12 +70,39 @@ func _ready() -> void:
 	vida_inicial = vida
 	vida_maxima = vida
 	velocidade_base = speed
+	var contador = HBoxContainer.new()
+	contador.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	contador.add_theme_constant_override("separation", 4)
+	$CanvasLayer.add_child(contador)
+	contador.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	contador.offset_left = 24
+	contador.offset_top = -96
+	contador.offset_right = 184
+	contador.offset_bottom = -72
+	contador.scale = Vector2(3,3)
+	contador.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var icone = TextureRect.new()
+	var imagem_moeda = preload("res://assets/moeda_1.png").get_image()
+	imagem_moeda.resize(48,48,Image.INTERPOLATE_NEAREST)
+	icone.texture = ImageTexture.create_from_image(imagem_moeda)
+	var material_moeda = ShaderMaterial.new()
+	material_moeda.shader = preload("res://scenes/itens/contorno_drop.gdshader")
+	icone.material = material_moeda
+	icone.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icone.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icone.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icone.custom_minimum_size = Vector2(24,24)
+	icone.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	contador.add_child(icone)
 	moedas_label = Label.new()
-	moedas_label.position = Vector2(24, 270)
-	moedas_label.add_theme_font_size_override("font_size", 28)
-	moedas_label.add_theme_color_override("font_color", Color("f6d779"))
-	moedas_label.text = "Engrenagens: 0"
-	$CanvasLayer.add_child(moedas_label)
+	moedas_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	moedas_label.add_theme_font_override("font", preload("res://assets/interface_equipe/numeros_hud.fnt"))
+	moedas_label.add_theme_font_size_override("font_size", 8)
+	moedas_label.add_theme_color_override("font_color", Color.WHITE)
+	moedas_label.add_theme_color_override("font_outline_color", Color("181225"))
+	moedas_label.add_theme_constant_override("outline_size", 0)
+	moedas_label.text = str(moedas)
+	contador.add_child(moedas_label)
 	label.hide()
 	var hud_vida = Control.new()
 	hud_vida.set_script(preload("res://scenes/player/hud_vida.gd"))
@@ -95,6 +123,9 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if controle_bloqueado:
+		velocity = Vector2.ZERO
+		return
 	tiro_restante = maxf(0.0, tiro_restante - _delta)
 	invulnerabilidade = maxf(0.0, invulnerabilidade - _delta)
 	$sprites.modulate.a = 0.45 if invulnerabilidade > 0 and fmod(invulnerabilidade, 0.2) < 0.1 else 1.0
@@ -333,6 +364,7 @@ func _atingir_inimigo(corpo: Node2D) -> void:
 			corpo.dano(multiplicador_dano, global_position.direction_to(corpo.global_position) if not global_position.is_equal_approx(corpo.global_position) else last_direction)
 
 func respawn() -> void:
+	controle_bloqueado = false
 	tiro_restante = 0.0
 	get_tree().call_group("projeteis_player", "queue_free")
 	get_tree().call_group("drops", "queue_free")
@@ -384,7 +416,7 @@ func coletar_drop(dados: Dictionary) -> bool:
 	match dados.tipo:
 		"moeda":
 			moedas += dados.quantidade
-			moedas_label.text = "Engrenagens: %d" % moedas
+			moedas_label.text = str(moedas)
 		"cura":
 			if vida >= vida_maxima:
 				return false
@@ -418,5 +450,7 @@ func recalcular_melhorias():
 	vida = mini(vida, vida_maxima)
 	estamina = mini(estamina, estamina_maxima)
 	melhorias_alteradas.emit()
+
+
 
 

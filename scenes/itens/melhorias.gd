@@ -22,11 +22,9 @@ static func icone(tipo: String, chip: int = 0) -> Texture2D:
 	var img = Image.create(20, 24, false, Image.FORMAT_RGBA8)
 	img.fill(Color.TRANSPARENT)
 	if tipo == "moeda":
-		img.fill_rect(Rect2i(3, 5, 14, 14), Color("454c50"))
-		img.fill_rect(Rect2i(5, 7, 10, 10), Color("9baaa8"))
-		for rect in [Rect2i(8, 2, 4, 5), Rect2i(8, 17, 4, 5), Rect2i(0, 10, 5, 4), Rect2i(15, 10, 5, 4)]:
-			img.fill_rect(rect, Color("9baaa8"))
-		img.fill_rect(Rect2i(8, 10, 4, 4), Color("30303e"))
+		var moeda = preload("res://assets/moeda_1.png").get_image()
+		moeda.resize(24, 24, Image.INTERPOLATE_NEAREST)
+		return ImageTexture.create_from_image(moeda)
 	elif tipo == "cura":
 		img.fill_rect(Rect2i(0, 9, 6, 8), Color("abb9ba"))
 		img.fill_rect(Rect2i(5, 6, 15, 14), Color("34344c"))
@@ -40,3 +38,4 @@ static func icone(tipo: String, chip: int = 0) -> Texture2D:
 			img.fill_rect(Rect2i(x, 4, 2, 4), Color("f5d72c"))
 			img.fill_rect(Rect2i(x, 12, 2, 8), Color("e3c623"))
 	return ImageTexture.create_from_image(img)
+

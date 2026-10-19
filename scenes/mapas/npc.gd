@@ -53,7 +53,7 @@ func comprar(indice: int) -> String:
 	if not jogador.coletar_drop(dados): return "Sua vida já está cheia."
 	# Débito somente depois que o item foi entregue. Sem await entre as operações.
 	jogador.moedas -= custo
-	jogador.moedas_label.text = "Engrenagens: %d" % jogador.moedas
+	jogador.moedas_label.text = str(jogador.moedas)
 	if indice == -1: curas -= 1
 	else: estoque[indice] -= 1
 	jogador.melhorias_alteradas.emit()
@@ -102,3 +102,4 @@ func _draw():
 		draw_circle(Vector2(0,-2),4,Color("ecd37b"))
 	else:
 		draw_rect(Rect2(-4,-5,8,4),Color("a3fbef"))
+
