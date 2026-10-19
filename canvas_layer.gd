@@ -42,7 +42,7 @@ func _ready():
 	# Menu começa escondido
 	menu.visible = false
 	mao.pivot_offset_ratio = Vector2(0.5, 0.5)
-	mao.scale = Vector2.ONE * 1.7
+	mao.scale = Vector2.ONE * 2.5
 	_mao_abaixo_da_tela()
 	mao.hide()
 	
