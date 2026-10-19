@@ -10,10 +10,12 @@ tipo_drop = "virus"
 velocidade = 20.0
 
 [node name="Sprite2D" parent="." index="0"]
+script = null
 texture = ExtResource("3")
 scale = Vector2(0.8, 0.8)
 
 [node name="Nome" type="Label" parent="."]
+visible = false
 offset_left = -30.0
 offset_top = -31.0
 offset_right = 30.0

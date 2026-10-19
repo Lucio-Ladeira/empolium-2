@@ -6,6 +6,7 @@ var portas: Array[StaticBody2D] = []
 enum Estado { NAO_VISITADA, EM_COMBATE, CONCLUIDA }
 @export_enum("inicio", "combate", "npc", "loja", "boss", "portal") var tipo: String = "combate"
 @export var encontro: Array[PackedScene] = []
+var visitada: bool = false
 var estado: Estado = Estado.NAO_VISITADA
 var celula: Vector2i
 var retangulo: Rect2i
@@ -28,6 +29,8 @@ func configurar_area(poligono: PackedVector2Array):
 
 func _entrada(corpo: Node2D):
 	if corpo.is_in_group("player") and corpo.vida > 0:
+		visitada = true
+		get_parent().get_parent().sala_atual = indice
 		iniciar.call_deferred(corpo)
 
 func iniciar(jogador: Node2D):

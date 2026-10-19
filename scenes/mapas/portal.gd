@@ -6,12 +6,18 @@ var usando: bool = false
 var fase: float = 0.0
 var jogador: Node2D
 var legenda: Label
+var painel: Sprite2D
 
 func _ready():
 	name = "Portal"
+	painel = Sprite2D.new()
+	painel.texture = preload("res://assets/tiles_epa/pixil-frame-0.png")
+	painel.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	painel.position.y = -28
+	add_child(painel)
 	jogador = get_tree().get_first_node_in_group("player")
 	legenda = Label.new()
-	legenda.position = Vector2(-74, -52)
+	legenda.position = Vector2(-74, -72)
 	legenda.size.x = 148
 	legenda.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	legenda.add_theme_font_size_override("font_size", 10)
@@ -19,6 +25,7 @@ func _ready():
 
 func _process(delta):
 	fase += delta
+	painel.modulate = Color.WHITE if ativo else Color(0.45, 0.45, 0.55)
 	legenda.text = "E • PRÓXIMO SETOR" if ativo else "Conclua os combates\ne o encontro final"
 	queue_redraw()
 

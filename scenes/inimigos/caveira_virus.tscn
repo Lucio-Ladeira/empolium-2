@@ -4,6 +4,8 @@
 [ext_resource type="Script" path="res://scenes/inimigos/inimigo_padrao.gd" id="2"]
 [ext_resource type="Texture2D" path="res://assets/inimigos/caveira_virus.png" id="3"]
 
+[ext_resource type="SpriteFrames" path="res://assets/artes_equipe/Skull-virus/animacoes.tres" id="quadros"]
+
 [node name="CaveiraVirus" instance=ExtResource("1")]
 script = ExtResource("2")
 tipo_drop = "comum"
@@ -11,8 +13,12 @@ velocidade = 45.0
 
 [node name="Sprite2D" parent="." index="0"]
 texture = ExtResource("3")
+animacoes = ExtResource("quadros")
+ancora = Vector2(35, 60)
+escala_arte = 0.46
 
 [node name="Nome" type="Label" parent="."]
+visible = false
 offset_left = -30.0
 offset_top = -31.0
 offset_right = 30.0

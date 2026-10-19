@@ -29,6 +29,8 @@ var jogador: Node2D
 @onready var sprite: Sprite2D = $Sprite2D
 
 func _ready():
+	var nome = get_node_or_null("Nome")
+	if nome: nome.hide()
 	origem = global_position
 	vida = vida_maxima
 	jogador = get_tree().get_first_node_in_group("player")
@@ -122,7 +124,10 @@ func dano(valor: float, direcao_impacto: Vector2 = Vector2.ZERO, aplicar_knockba
 		estado = Estado.MORTO
 		velocity = Vector2.ZERO
 		$CollisionShape2D.set_deferred("disabled", true)
-		hide()
+		if sprite.has_method("morrer"):
+			sprite.morrer()
+		else:
+			hide()
 	queue_redraw()
 
 func resetar():
@@ -138,6 +143,8 @@ func resetar():
 	tempo = 0
 	velocity = Vector2.ZERO
 	$CollisionShape2D.set_deferred("disabled", false)
+	if sprite.has_method("reiniciar"):
+		sprite.reiniciar()
 	show()
 
 func _draw():

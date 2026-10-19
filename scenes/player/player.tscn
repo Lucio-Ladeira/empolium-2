@@ -4,6 +4,9 @@
 [ext_resource type="Texture2D" uid="uid://dmi87wvpp38y1" path="res://assets/luz/lpc_shadow.png" id="2_lda7p"]
 [ext_resource type="Texture2D" uid="uid://d4f4qseht367v" path="res://assets/tileset_completo.png" id="3_gmlin"]
 
+[ext_resource type="Script" path="res://scenes/arte_personagem.gd" id="arte"]
+[ext_resource type="SpriteFrames" path="res://assets/artes_equipe/Main/animacoes.tres" id="quadros"]
+
 [sub_resource type="Animation" id="Animation_hacnt"]
 length = 0.001
 tracks/0/type = "value"
@@ -641,6 +644,12 @@ texture = ExtResource("2_lda7p")
 
 [node name="sprites" type="Sprite2D" parent="." unique_id=2030719960]
 position = Vector2(-1, -3)
+script = ExtResource("arte")
+animacoes = ExtResource("quadros")
+protagonista = true
+olha_esquerda = true
+ancora = Vector2(34.5, 63)
+escala_arte = 0.56
 texture = ExtResource("3_gmlin")
 hframes = 8
 vframes = 12
@@ -664,7 +673,7 @@ position = Vector2(-1, 13)
 shape = SubResource("CircleShape2D_ksngb")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=719952462]
-zoom = Vector2(2.5, 2.5)
+zoom = Vector2(4.5, 4.5)
 position_smoothing_enabled = true
 rotation_smoothing_enabled = true
 
@@ -681,13 +690,11 @@ z_index = 6
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -240.0
-offset_top = 12.0
-offset_right = -20.0
-offset_bottom = 82.0
+offset_left = -40.0
+offset_right = -12.0
+offset_bottom = 23.0
 grow_horizontal = 0
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 28
 text = "300"
 
 [node name="dano" type="Area2D" parent="." unique_id=1471751354]
@@ -702,3 +709,4 @@ debug_color = Color(1, 0, 0, 0.41960785)
 
 [connection signal="timeout" from="estamina_timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="dashtimer" to="." method="_on_dashtimer_timeout"]
+

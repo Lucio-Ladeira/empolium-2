@@ -9,11 +9,21 @@ var descricao: Label
 var equipar: Button
 var mensagem: String = ""
 @onready var controles: Control = $ControlesBraco
-@onready var arte: TextureRect = $Arte
-@onready var mao: TextureRect = $"../TextureRect"
 @onready var slots: Array[Button] = [$ControlesBraco/Slot1, $ControlesBraco/Slot2, $ControlesBraco/Slot3]
 
+func estilo_arte(botao: Button, nome: String, selecionavel: bool = false):
+	var estilo = StyleBoxTexture.new()
+	estilo.texture = load("res://assets/interface_equipe/%s.png" % nome)
+	for estado in ["hover", "pressed", "focus", "hover_pressed"]:
+		botao.add_theme_stylebox_override(estado, estilo)
+	if selecionavel:
+		botao.add_theme_stylebox_override("pressed", estilo)
+
 func _ready():
+	estilo_arte($ControlesBraco/Anterior, "anterior")
+	estilo_arte($ControlesBraco/Proximo, "proximo")
+	for slot in slots:
+		estilo_arte(slot, "slot", true)
 	jogador = get_tree().get_first_node_in_group("player")
 	for i in range(slots.size()):
 		slots[i].pressed.connect(selecionar_slot.bind(i))
@@ -27,6 +37,7 @@ func _ready():
 		botao.pressed.connect(remover.bind(i))
 		equipamentos.append(botao)
 	equipar = criar_botao(Vector2(352, 430), Vector2(97, 28))
+	estilo_arte(equipar, "equip")
 	equipar.tooltip_text = "Equipar o chip selecionado"
 	equipar.pressed.connect(equipar_selecionado)
 	var info = criar_botao(Vector2(456, 430), Vector2(95, 28))
@@ -42,7 +53,6 @@ func _ready():
 	if is_instance_valid(jogador):
 		jogador.melhorias_alteradas.connect(atualizar_slots)
 	visibility_changed.connect(atualizar_slots)
-	visibility_changed.connect(ajustar_controles)
 	resized.connect(ajustar_controles)
 	ajustar_controles()
 	atualizar_slots()
@@ -61,13 +71,9 @@ func criar_botao(pos: Vector2, tamanho: Vector2) -> Button:
 	return botao
 
 func ajustar_controles():
-	var fator = mao.size.x * mao.scale.x / 960.0
-	var tamanho = Vector2(960, 540) * fator
-	var posicao = Vector2((size.x - tamanho.x) / 2.0, size.y - tamanho.y)
-	arte.scale = Vector2.ONE * fator
-	arte.position = posicao
+	var fator = minf(size.x / 960.0, size.y / 540.0)
 	controles.scale = Vector2.ONE * fator
-	controles.position = posicao
+	controles.position = (size - Vector2(960, 540) * fator) / 2.0
 
 func mudar_pagina(direcao: int):
 	pagina = posmod(pagina + direcao, 2)
@@ -113,3 +119,4 @@ func atualizar_slots():
 	descricao.text += "Disponíveis: %d\nToque EQUIP para usar.\nToque no chip acima para remover." % livres if item.nivel == 1 else "Disponível na loja.\nSem drop de inimigos.\nDisponíveis: %d\nUse EQUIP para equipar." % livres
 	if not mensagem.is_empty():
 		descricao.text += "\n" + mensagem
+

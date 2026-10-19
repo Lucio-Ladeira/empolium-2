@@ -70,11 +70,15 @@ func _ready() -> void:
 	vida_maxima = vida
 	velocidade_base = speed
 	moedas_label = Label.new()
-	moedas_label.position = Vector2(18, 16)
+	moedas_label.position = Vector2(24, 270)
 	moedas_label.add_theme_font_size_override("font_size", 28)
 	moedas_label.add_theme_color_override("font_color", Color("f6d779"))
 	moedas_label.text = "Engrenagens: 0"
 	$CanvasLayer.add_child(moedas_label)
+	label.hide()
+	var hud_vida = Control.new()
+	hud_vida.set_script(preload("res://scenes/player/hud_vida.gd"))
+	$CanvasLayer.add_child(hud_vida)
 	$dano.body_entered.connect(_atingir_inimigo)
 	estamina_timer.start()
 
@@ -407,3 +411,5 @@ func recalcular_melhorias():
 	vida = mini(vida, vida_maxima)
 	estamina = mini(estamina, estamina_maxima)
 	melhorias_alteradas.emit()
+
+

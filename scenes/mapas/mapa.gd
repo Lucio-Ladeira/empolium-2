@@ -21,6 +21,7 @@ const DIRECOES = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 @export var cena_vendedor: PackedScene
 var seed_atual: int
 var etapa: int = 1
+var sala_atual: int = 0
 var salas: Array = []
 var ligacoes: Array[Vector2i] = []
 var piso: Dictionary = {}
@@ -49,6 +50,7 @@ func gerar(seed_nova: int = 0):
 	get_tree().call_group("drops", "queue_free")
 	for filho in $Salas.get_children():
 		filho.free()
+	sala_atual = 0
 	salas.clear()
 	ligacoes.clear()
 	piso.clear()
@@ -64,25 +66,29 @@ func gerar(seed_nova: int = 0):
 	var quantidade = rng.randi_range(clampi(combates_min, 2, 6), clampi(maxi(combates_max, combates_min), 2, 6))
 	var celula = Vector2i.ZERO
 	_adicionar_sala("inicio", celula)
+	salas[0].visitada = true
 	# Caminho principal monotônico: não cruza a si mesmo nem sobrepõe salas.
 	for i in range(quantidade + 2):
 		celula += Vector2i.RIGHT if rng.randf() < 0.5 else Vector2i.DOWN
 		var tipo = "combate" if i < quantidade else "boss" if i == quantidade else "portal"
 		_adicionar_sala(tipo, celula)
 		ligacoes.append(Vector2i(i, i + 1))
-	# Dois ramos opcionais; nenhuma sala especial corta o caminho obrigatório.
+	# Sorteia entre todas as posições livres ligadas a salas de combate.
+	var bases_especiais: Array[int] = []
 	for tipo in ["npc", "loja"]:
-		var conectado = false
+		var opcoes: Array = []
 		for base in range(1, quantidade + 1):
+			if base in bases_especiais: continue
 			for dir in DIRECOES:
-				var candidata = salas[base].celula + dir
-				if not salas.any(func(s): return s.celula == candidata):
-					_adicionar_sala(tipo, candidata)
-					ligacoes.append(Vector2i(base, salas.size() - 1))
-					conectado = true
-					break
-			if conectado:
-				break
+				var candidata: Vector2i = salas[base].celula + dir
+				if salas.any(func(s): return s.celula == candidata): continue
+				var perto_final = salas.any(func(s): return s.tipo in ["boss", "portal"] and absi(s.celula.x-candidata.x) + absi(s.celula.y-candidata.y) <= 1)
+				if not perto_final: opcoes.append({"base": base, "celula": candidata})
+		if not opcoes.is_empty():
+			var escolha = opcoes[rng.randi_range(0, opcoes.size()-1)]
+			bases_especiais.append(escolha.base)
+			_adicionar_sala(tipo, escolha.celula)
+			ligacoes.append(Vector2i(escolha.base, salas.size()-1))
 	for sala in salas:
 		_preencher(sala.retangulo)
 	for par in ligacoes:
@@ -98,12 +104,12 @@ func gerar(seed_nova: int = 0):
 		gerando = false
 		return
 	for c in piso:
-		chao.set_cell(c, 0, Vector2i(0, 12))
+		chao.set_cell(c, 0, Vector2i(1 if posmod(c.x, 9) == 0 else 2 if posmod(c.y, 11) == 0 else 0, 12))
 		for x in range(-1, 2):
 			for y in range(-1, 2):
 				var vizinha: Vector2i = c + Vector2i(x,y)
 				if not piso.has(vizinha):
-					paredes.set_cell(vizinha, 0, Vector2i(7, 10))
+					paredes.set_cell(vizinha, 0, Vector2i(8 if posmod(vizinha.x + vizinha.y, 4) == 0 else 7, 10))
 	chao.update_internals()
 	paredes.update_internals()
 	_criar_navegacao()
@@ -181,6 +187,7 @@ func _montar_sala(sala):
 	sala.rotulo.add_theme_font_size_override("font_size", 12)
 	sala.rotulo.modulate = Color("cebafa")
 	sala.add_child(sala.rotulo)
+	sala.rotulo.hide()
 	if sala.tipo in ["npc", "loja"]: sala.rotulo.position.y -= 100
 	for offset in [Vector2i(-5, -5), Vector2i(5, 5), Vector2i(-5, 5), Vector2i(5, -5), Vector2i(0,-6), Vector2i(0,6), Vector2i(-6,0), Vector2i(6,0)]:
 		sala.pontos.append(ponto_personagem(centro + offset))
@@ -216,6 +223,7 @@ func _montar_sala(sala):
 		sala.add_child(portal)
 		portal.utilizado.connect(_avancar)
 		sala.rotulo.position.y -= 28
+	_decorar_sala(sala)
 	_marcar_luz(sala, pos)
 
 func _marcador(sala, nome: String, pos: Vector2) -> Marker2D:
@@ -288,3 +296,23 @@ func _criar_portas():
 				canto = Vector2i(centro.x-largura/2-1,sala.retangulo.end.y+1 if direcao.y>0 else sala.retangulo.position.y-2)
 				tamanho = Vector2i(largura+2,1)
 			sala.adicionar_porta(_poligono(Rect2i(canto,tamanho)))
+
+func _decorar_sala(sala):
+	# As caixas ficam sobre paredes existentes, fora da área de circulação.
+	for i in range(2):
+		var arte = Sprite2D.new()
+		arte.texture = load("res://assets/tiles_epa/%s.png" % ("caixas3" if i == 0 else "caixasolo"))
+		arte.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		var celula: Vector2i = sala.retangulo.position + Vector2i(3 + i * 3, -1)
+		arte.position = chao.map_to_local(celula) - Vector2(0, 48)
+		sala.add_child(arte)
+	if sala.tipo in ["inicio", "loja", "npc"]:
+		var logo = Sprite2D.new()
+		logo.texture = preload("res://assets/tiles_epa/logoledempolium.png")
+		logo.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		logo.z_index = 2
+		logo.position = chao.map_to_local(sala.retangulo.get_center() + Vector2i(-5, -5)) - Vector2(0, 8)
+		sala.add_child(logo)
+
+
+
