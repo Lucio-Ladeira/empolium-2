@@ -71,6 +71,7 @@ func _ready() -> void:
 	velocidade_base = speed
 	moedas_label = Label.new()
 	moedas_label.position = Vector2(18, 16)
+	moedas_label.add_theme_font_size_override("font_size", 18)
 	moedas_label.add_theme_color_override("font_color", Color("f6d779"))
 	moedas_label.text = "Engrenagens: 0"
 	$CanvasLayer.add_child(moedas_label)

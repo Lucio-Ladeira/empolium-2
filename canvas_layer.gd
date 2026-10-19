@@ -41,6 +41,10 @@ func _ready():
 	
 	# Menu começa escondido
 	menu.visible = false
+	mao.pivot_offset_ratio = Vector2(0.5, 0.5)
+	mao.scale = Vector2.ONE * 1.7
+	_mao_abaixo_da_tela()
+	mao.hide()
 	
 	# Permite que os botões recebam foco
 	melhorias.focus_mode = Control.FOCUS_ALL
@@ -91,7 +95,9 @@ func abrir_pause():
 	menu.visible = false
 	
 	# Coloca a mão embaixo da tela
-	mao.position.y = 900
+	_mao_abaixo_da_tela()
+	mao.show()
+	var mao_no_rodape := _posicao_mao_no_rodape()
 	
 	# Cria o Tween da subida
 	var tween = create_tween()
@@ -99,8 +105,14 @@ func abrir_pause():
 	
 	tween.tween_property(
 		mao,
-		"position:y",
-		53.0,
+		"offset_top",
+		mao_no_rodape.x,
+		velocidade_subida
+	).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(
+		mao,
+		"offset_bottom",
+		mao_no_rodape.y,
 		velocidade_subida
 	).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	
@@ -145,19 +157,37 @@ func fechar_pause():
 	
 	tween.tween_property(
 		mao,
-		"position:y",
-		900.0,
+		"offset_top",
+		0.0,
+		velocidade_descida
+	).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.parallel().tween_property(
+		mao,
+		"offset_bottom",
+		mao.size.y,
 		velocidade_descida
 	).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	
 	# Espera a mão terminar de descer
 	await tween.finished
+	mao.hide()
 	
 	# Esconde o efeito VHS
 	vhs.visible = false
 	
 	# Finalmente tira o jogo do pause
 	get_tree().paused = false
+
+
+func _mao_abaixo_da_tela() -> void:
+	var altura := mao.size.y
+	mao.offset_top = 0.0
+	mao.offset_bottom = altura
+
+
+func _posicao_mao_no_rodape() -> Vector2:
+	var topo := -mao.size.y * (mao.scale.y + 1.0) * 0.5
+	return Vector2(topo, topo + mao.size.y)
 
 
 # ==================================================

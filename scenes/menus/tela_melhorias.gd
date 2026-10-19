@@ -9,6 +9,8 @@ var descricao: Label
 var equipar: Button
 var mensagem: String = ""
 @onready var controles: Control = $ControlesBraco
+@onready var arte: TextureRect = $Arte
+@onready var mao: TextureRect = $"../TextureRect"
 @onready var slots: Array[Button] = [$ControlesBraco/Slot1, $ControlesBraco/Slot2, $ControlesBraco/Slot3]
 
 func _ready():
@@ -40,6 +42,7 @@ func _ready():
 	if is_instance_valid(jogador):
 		jogador.melhorias_alteradas.connect(atualizar_slots)
 	visibility_changed.connect(atualizar_slots)
+	visibility_changed.connect(ajustar_controles)
 	resized.connect(ajustar_controles)
 	ajustar_controles()
 	atualizar_slots()
@@ -58,9 +61,13 @@ func criar_botao(pos: Vector2, tamanho: Vector2) -> Button:
 	return botao
 
 func ajustar_controles():
-	var fator = minf(size.x / 960.0, size.y / 540.0)
+	var fator = mao.size.x * mao.scale.x / 960.0
+	var tamanho = Vector2(960, 540) * fator
+	var posicao = Vector2((size.x - tamanho.x) / 2.0, size.y - tamanho.y)
+	arte.scale = Vector2.ONE * fator
+	arte.position = posicao
 	controles.scale = Vector2.ONE * fator
-	controles.position = (size - Vector2(960, 540) * fator) / 2.0
+	controles.position = posicao
 
 func mudar_pagina(direcao: int):
 	pagina = posmod(pagina + direcao, 2)
