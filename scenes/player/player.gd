@@ -288,6 +288,9 @@ func morre() -> void:
 	$"dano/CollisionShape2D".set_deferred("disabled", true)
 	velocity = Vector2.ZERO
 	anim_state.travel("death")
+	var tela = preload("res://scenes/menus/tela_morte.gd").new()
+	tela.jogador = self
+	get_tree().root.add_child(tela)
 
 
 # =========================================================
@@ -358,14 +361,18 @@ func respawn() -> void:
 func atirar() -> void:
 	if current_state != PlayerState.MOVE or tiro_restante > 0.0 or get_tree().paused:
 		return
-	var mira = get_global_mouse_position() - global_position
+	var lado = 1.0 if get_global_mouse_position().x >= global_position.x else -1.0
+	var origem_tiro = global_position + Vector2(-7.0 * lado, -5.0)
+	var consulta_mao = PhysicsRayQueryParameters2D.create(global_position + Vector2(0,10), origem_tiro + Vector2(0,10), 1)
+	if not get_world_2d().direct_space_state.intersect_ray(consulta_mao).is_empty(): return
+	var mira = get_global_mouse_position() - origem_tiro
 	if mira.length_squared() <= 1.0:
 		return
 	var tiro = PROJETIL.instantiate()
 	tiro.direcao = mira.normalized()
 	tiro.dano = dano_tiro * multiplicador_dano
 	get_parent().add_child(tiro)
-	tiro.global_position = global_position
+	tiro.global_position = origem_tiro
 	tiro_restante = intervalo_tiro
 	last_direction = tiro.direcao
 	animation_state(last_direction)

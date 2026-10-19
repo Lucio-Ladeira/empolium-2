@@ -621,7 +621,7 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 graph_offset = Vector2(-25.949059, -27)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ksngb"]
-radius = 6.0
+radius = 10.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pmy53"]
 size = Vector2(37.5, 30)
@@ -630,6 +630,8 @@ size = Vector2(37.5, 30)
 z_index = 1
 z_as_relative = false
 y_sort_enabled = true
+motion_mode = 1
+safe_margin = 0.5
 collision_layer = 128
 collision_mask = 5
 script = ExtResource("1_lda7p")

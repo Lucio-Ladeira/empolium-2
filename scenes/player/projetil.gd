@@ -26,7 +26,3 @@ func _physics_process(delta):
 		return
 	global_position = destino
 
-func _draw():
-	draw_line(Vector2(-8, 0), Vector2(2, 0), Color(1, 0.7, 0.15), 3)
-	draw_circle(Vector2(2, 0), 2, Color(1, 1, 0.7))
-

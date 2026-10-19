@@ -3,6 +3,10 @@ extends Node2D
 const NPC = preload("res://scenes/mapas/npc.gd")
 const Interacao = preload("res://scenes/mapas/interacao.gd")
 var interacao: CanvasLayer
+var limites: StaticBody2D
+var zonas_caixas: Array[Rect2] = []
+var leds: Node2D
+var obstaculos_caixas: Array[PackedVector2Array] = []
 
 const Sala = preload("res://scenes/mapas/sala.gd")
 const Portal = preload("res://scenes/mapas/portal.gd")
@@ -37,6 +41,11 @@ var rng = RandomNumberGenerator.new()
 func _ready():
 	interacao = Interacao.new()
 	add_child(interacao)
+	limites = StaticBody2D.new()
+	limites.name = "LimitesDoPiso"
+	limites.collision_layer = 1
+	limites.collision_mask = 0
+	add_child(limites)
 	RenderingServer.set_default_clear_color(Color("171421"))
 	gerar(seed_mapa)
 
@@ -57,6 +66,10 @@ func gerar(seed_nova: int = 0):
 	areas.clear()
 	chao.clear()
 	paredes.clear()
+	obstaculos_caixas.clear()
+	zonas_caixas.clear()
+	if is_instance_valid(leds): leds.free()
+	for filho in limites.get_children(): filho.free()
 	if seed_nova == 0:
 		rng.randomize()
 		seed_atual = int(rng.randi())
@@ -110,12 +123,34 @@ func gerar(seed_nova: int = 0):
 				var vizinha: Vector2i = c + Vector2i(x,y)
 				if not piso.has(vizinha):
 					paredes.set_cell(vizinha, 0, Vector2i(8 if posmod(vizinha.x + vizinha.y, 4) == 0 else 7, 10))
+	leds = preload("res://scenes/mapas/leds_dutos.gd").new()
+	leds.z_index = -1
+	for c in piso:
+		if posmod(c.x,9) != 0 and posmod(c.y,11) != 0: continue
+		var cantos = _poligono(Rect2i(c,Vector2i.ONE), Vector2(0,-8))
+		for i in range(4):
+			var vizinho = c + DIRECOES[i]
+			if piso.has(vizinho) and (posmod(vizinho.x,9) == 0 or posmod(vizinho.y,11) == 0): continue
+			leds.segmentos.append(PackedVector2Array([cantos[(i+1)%4],cantos[(i+2)%4]]))
+	add_child(leds)
 	chao.update_internals()
 	paredes.update_internals()
+	_criar_limites()
 	_criar_navegacao()
 	NavigationServer2D.map_force_update(get_world_2d().navigation_map)
+	var combates = salas.filter(func(s): return s.tipo in ["combate", "boss"])
+	var candidatos_hordas = combates.duplicate()
+	if etapa == 2:
+		for i in range(maxi(1, combates.size() / 2)):
+			var indice = rng.randi_range(0, candidatos_hordas.size()-1)
+			candidatos_hordas[indice].hordas_extras = 1
+			candidatos_hordas.remove_at(indice)
+	elif etapa == 3:
+		for sala in combates: sala.hordas_extras = 2
 	for sala in salas:
 		_montar_sala(sala)
+	_criar_navegacao()
+	NavigationServer2D.map_force_update(get_world_2d().navigation_map)
 	_criar_portas()
 	$OcclusionOutline.rebuild_masks.call_deferred()
 	jogador.ponto_respawn = ponto_personagem(salas[0].retangulo.get_center())
@@ -168,6 +203,7 @@ func _criar_navegacao():
 	var geometria = NavigationMeshSourceGeometryData2D.new()
 	for rect in areas:
 		geometria.add_traversable_outline(_poligono(rect, Vector2(0, -12)))
+	for contorno in obstaculos_caixas: geometria.add_obstruction_outline(contorno)
 	var poligono = NavigationPolygon.new()
 	poligono.agent_radius = 9.0
 	NavigationServer2D.bake_from_source_geometry_data(poligono, geometria)
@@ -265,7 +301,8 @@ func _sala_concluida(_sala):
 
 func _atualizar_objetivo():
 	var restantes = salas.filter(func(s): return s.tipo in ["combate", "boss"] and s.estado != Sala.Estado.CONCLUIDA).size()
-	if is_instance_valid(portal): portal.ativo = restantes == 0
+	if is_instance_valid(portal): portal.ativo = restantes == 0 and etapa < 3
+	if is_instance_valid(portal): portal.ultima_etapa = etapa == 3 and restantes == 0
 	objetivo.text = "Setor %d • %d encontros restantes • M: mapa" % [etapa, restantes] if restantes > 0 else "Setor %d concluído • Vá à SAÍDA e pressione E • M: mapa" % etapa
 
 func reiniciar_encontros():
@@ -275,7 +312,7 @@ func reiniciar_encontros():
 	_atualizar_objetivo()
 
 func _avancar():
-	if gerando: return
+	if gerando or etapa >= 3: return
 	etapa += 1
 	gerar.call_deferred(seed_atual + 1)
 
@@ -298,14 +335,38 @@ func _criar_portas():
 			sala.adicionar_porta(_poligono(Rect2i(canto,tamanho)))
 
 func _decorar_sala(sala):
-	# As caixas ficam sobre paredes existentes, fora da área de circulação.
-	for i in range(2):
+	var ocupadas: Array[Vector2] = []
+	var quantidade = rng.randi_range(2, 6)
+	var centro = sala.retangulo.get_center()
+	for tentativa in range(80):
+		if ocupadas.size() >= quantidade: break
+		var celula = Vector2i(rng.randi_range(sala.retangulo.position.x+2, sala.retangulo.end.x-3), rng.randi_range(sala.retangulo.position.y+2, sala.retangulo.end.y-3))
+		# Mantém os corredores centrais, NPCs e pontos de chegada livres.
+		if absi(celula.x-centro.x) <= 2 or absi(celula.y-centro.y) <= 2: continue
+		var pos = chao.map_to_local(celula)
+		if sala.pontos.any(func(p): return p.distance_to(pos) < 40): continue
+		if ocupadas.any(func(p): return p.distance_to(pos) < 38): continue
+		ocupadas.append(pos)
+		zonas_caixas.append(Rect2(pos-Vector2(40,48), Vector2(80,80)))
+		var caixa = StaticBody2D.new()
+		caixa.name = "Caixa%d" % ocupadas.size()
+		caixa.position = pos
+		caixa.z_index = 1
+		caixa.collision_layer = 1
+		caixa.collision_mask = 0
 		var arte = Sprite2D.new()
-		arte.texture = load("res://assets/tiles_epa/%s.png" % ("caixas3" if i == 0 else "caixasolo"))
+		arte.texture = load("res://assets/tiles_epa/%s.png" % ("caixas3" if rng.randf() < 0.3 else "caixasolo"))
 		arte.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		var celula: Vector2i = sala.retangulo.position + Vector2i(3 + i * 3, -1)
-		arte.position = chao.map_to_local(celula) - Vector2(0, 48)
-		sala.add_child(arte)
+		arte.position.y = -16
+		caixa.add_child(arte)
+		var base = PackedVector2Array([Vector2(-15,-7),Vector2(0,-15),Vector2(15,-7),Vector2(0,1)])
+		var forma = CollisionPolygon2D.new()
+		forma.polygon = base
+		caixa.add_child(forma)
+		sala.add_child(caixa)
+		var contorno = PackedVector2Array()
+		for ponto in base: contorno.append(pos + ponto - Vector2(0,10))
+		obstaculos_caixas.append(contorno)
 	if sala.tipo in ["inicio", "loja", "npc"]:
 		var logo = Sprite2D.new()
 		logo.texture = preload("res://assets/tiles_epa/logoledempolium.png")
@@ -316,3 +377,33 @@ func _decorar_sala(sala):
 
 
 
+
+func _criar_limites():
+	# Fecha cada aresta externa do piso: movimento e dash não atravessam emendas.
+	for celula in piso:
+		var cantos = _poligono(Rect2i(celula, Vector2i.ONE))
+		for i in range(DIRECOES.size()):
+			if piso.has(celula + DIRECOES[i]): continue
+			var a = cantos[(i+1)%4]
+			var b = cantos[(i+2)%4]
+			var borda = CapsuleShape2D.new()
+			borda.radius = 4.0
+			borda.height = a.distance_to(b) + 8.0
+			var colisao = CollisionShape2D.new()
+			colisao.shape = borda
+			colisao.position = (a+b)*0.5
+			colisao.rotation = (b-a).angle() - PI*0.5
+			limites.add_child(colisao)
+
+func _unhandled_key_input(event: InputEvent):
+	if not event is InputEventKey or not event.pressed or event.echo: return
+	if not event.ctrl_pressed or event.alt_pressed or event.shift_pressed: return
+	if gerando or get_tree().paused or jogador.vida <= 0: return
+	if event.physical_keycode == KEY_K:
+		if sala_atual >= 0 and sala_atual < salas.size():
+			salas[sala_atual].limpar_por_atalho()
+		get_viewport().set_input_as_handled()
+	elif event.physical_keycode == KEY_X:
+		jogador.invulnerabilidade = 0.0
+		jogador.dano(jogador.vida)
+		get_viewport().set_input_as_handled()

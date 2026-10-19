@@ -2,6 +2,7 @@ extends Node2D
 
 signal utilizado
 var ativo: bool = false
+var ultima_etapa: bool = false
 var usando: bool = false
 var fase: float = 0.0
 var jogador: Node2D
@@ -26,7 +27,7 @@ func _ready():
 func _process(delta):
 	fase += delta
 	painel.modulate = Color.WHITE if ativo else Color(0.45, 0.45, 0.55)
-	legenda.text = "E • PRÓXIMO SETOR" if ativo else "Conclua os combates\ne o encontro final"
+	legenda.text = "3 ETAPAS CONCLUÍDAS" if ultima_etapa else "E • PRÓXIMO SETOR" if ativo else "Conclua os combates\ne o encontro final"
 	queue_redraw()
 
 func _unhandled_key_input(event: InputEvent):
