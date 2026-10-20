@@ -371,7 +371,7 @@ func _sala_concluida(_sala):
 		var pontuacao = floori(tempo_partida)
 		resultado.text = "PARTIDA CONCLUÍDA\nTEMPO %s\nPONTUAÇÃO %d" % [_formatar_tempo(tempo_partida), pontuacao]
 		resultado.hide()
-		FimPartida.mostrar_creditos()
+		FimPartida.mostrar_creditos(_formatar_tempo(tempo_partida), pontuacao)
 		get_tree().paused = true
 
 func _atualizar_objetivo():

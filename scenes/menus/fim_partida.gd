@@ -18,7 +18,7 @@ func _reiniciar():
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://main.tscn")
 	reiniciando = false
-func mostrar_creditos():
+func mostrar_creditos(tempo: String, pontuacao: int):
 	if is_instance_valid(tela): return
 	tela = CanvasLayer.new()
 	tela.layer = 110
@@ -34,3 +34,18 @@ func mostrar_creditos():
 	arte.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	arte.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	fundo.add_child(arte)
+	var dados = Label.new()
+	dados.text = "TEMPO %s\nPONTUAÇÃO %d" % [tempo, pontuacao]
+	dados.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	dados.offset_left = -330.0
+	dados.offset_top = -78.0
+	dados.offset_right = -24.0
+	dados.offset_bottom = -20.0
+	dados.add_theme_color_override("font_color", Color("ebdcff"))
+	dados.add_theme_color_override("font_outline_color", Color("14121f"))
+	dados.add_theme_constant_override("outline_size", 5)
+	dados.add_theme_font_size_override("font_size", 18)
+	dados.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	dados.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	dados.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fundo.add_child(dados)
