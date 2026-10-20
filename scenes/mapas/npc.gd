@@ -1,11 +1,12 @@
 extends Node2D
 
 const Catalogo = preload("res://scenes/itens/melhorias.gd")
-const NOMES = {"guia":"Atlas • Guia", "medica":"Íris • Médica", "tecnico":"Byte • Técnico", "vendedor":"Nox • Comerciante"}
+const NOMES = {"guia":"Atlas • Guia", "medica":"Íris • Médica", "tecnico":"Byte • Técnico", "vendedor":"Comércio"}
 @export_enum("guia", "medica", "tecnico", "vendedor") var papel: String = "guia"
-@export var precos: Array[int] = [4, 5, 4, 10, 12]
-@export var preco_cura: int = 2
-var estoque: Array[int] = [1,1,1,1,1]
+@export var precos: Array[int] = [20, 25, 20, 50, 60]
+@export var preco_cura: int = 10
+var estoque: Array[int] = [0,0,0,0,0]
+var ofertas: Array[int] = []
 var curas: int = 3
 var servico_usado: bool = false
 var jogador: Node2D
@@ -14,6 +15,15 @@ var conversa: CanvasLayer
 
 func _ready():
 	add_to_group("npcs")
+	var mapa = get_tree().get_first_node_in_group("mapas")
+	var etapa = clampi(mapa.etapa if mapa else 1,1,3)
+	var comuns = [0,1,2]
+	var raros = [3,4]
+	comuns.shuffle()
+	raros.shuffle()
+	for i in range(4-etapa): ofertas.append(comuns[i])
+	for i in range(etapa-1): ofertas.append(raros[i])
+	for i in ofertas: estoque[i] = 1
 	jogador = get_tree().get_first_node_in_group("player")
 	conversa = get_tree().get_first_node_in_group("interacao_npc")
 	legenda = Label.new()
@@ -22,6 +32,13 @@ func _ready():
 	legenda.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	legenda.add_theme_font_size_override("font_size",9)
 	add_child(legenda)
+	var arte = AnimatedSprite2D.new()
+	arte.sprite_frames = preload("res://assets/mercador/animacoes.tres")
+	arte.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	arte.scale = Vector2.ONE * 0.75
+	arte.position = Vector2(0,-12)
+	add_child(arte)
+	arte.play("default")
 	queue_redraw()
 
 func perto() -> bool:
@@ -31,7 +48,7 @@ func perto() -> bool:
 	return get_world_2d().direct_space_state.intersect_ray(raio).is_empty()
 
 func _process(_delta):
-	legenda.text = NOMES[papel] + ("\n[E] Conversar" if perto() else "")
+	legenda.text = "[E] Negociar" if perto() else ""
 
 func _unhandled_key_input(event: InputEvent):
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_E and perto():
@@ -52,6 +69,7 @@ func comprar(indice: int) -> String:
 	var dados = {"tipo":"cura","quantidade":1} if indice == -1 else {"tipo":"chip","quantidade":1,"chip":indice}
 	if not jogador.coletar_drop(dados): return "Sua vida já está cheia."
 	# Débito somente depois que o item foi entregue. Sem await entre as operações.
+	Sons.tocar("comprou-comp")
 	jogador.moedas -= custo
 	jogador.moedas_label.text = str(jogador.moedas)
 	if indice == -1: curas -= 1
@@ -82,24 +100,5 @@ func atender() -> String:
 	return "Pronto! Recuperação completa, sem custo."
 
 func _draw():
-	var cor = {"guia":Color("7c83d8"),"medica":Color("62ba8c"),"tecnico":Color("d7a45d"),"vendedor":Color("a36ac2")}[papel]
 	draw_set_transform(Vector2(0,12),0,Vector2(1,0.4))
 	draw_circle(Vector2.ZERO,12,Color(0,0,0,0.35))
-	draw_set_transform(Vector2.ZERO)
-	# Robôs em pixel art, construídos com formas nativas na escala dos personagens.
-	draw_rect(Rect2(-8,-11,16,21),Color("262b43"))
-	draw_rect(Rect2(-7,-10,14,17),cor)
-	draw_rect(Rect2(-9,-28,18,17),Color("262b43"))
-	draw_rect(Rect2(-7,-26,14,13),cor.lightened(0.2))
-	draw_rect(Rect2(-6,-23,12,6),Color("20263d"))
-	for x in [-4,2]: draw_rect(Rect2(x,-21,2,2),Color("a3fbef"))
-	for x in [-7,3]: draw_rect(Rect2(x,7,4,7),Color("343851"))
-	for x in [-11,8]: draw_rect(Rect2(x,-9,3,13),cor.darkened(0.3))
-	if papel == "medica":
-		draw_rect(Rect2(-4,-4,8,3),Color.WHITE)
-		draw_rect(Rect2(-1,-7,3,9),Color.WHITE)
-	elif papel == "vendedor":
-		draw_circle(Vector2(0,-2),4,Color("ecd37b"))
-	else:
-		draw_rect(Rect2(-4,-5,8,4),Color("a3fbef"))
-

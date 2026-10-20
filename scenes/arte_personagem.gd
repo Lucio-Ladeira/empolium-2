@@ -58,13 +58,15 @@ func _atualizar(delta: float):
 	if protagonista:
 		match corpo.current_state:
 			corpo.PlayerState.DEATH, corpo.PlayerState.HURT: desejada = &"Damage"
-			corpo.PlayerState.ATTACK: desejada = &"Stand"
+			corpo.PlayerState.ATTACK: desejada = &"Attack"
 			corpo.PlayerState.DASH: desejada = &"Walk"
 			_:
 				if corpo.velocity.length_squared()>1: desejada = &"Walk"
 		if desejada == &"Walk" and corpo.current_state == corpo.PlayerState.MOVE and corpo.tiro_restante > 0 and animacoes.has_animation("Walk-fire"):
 			desejada = &"Walk-fire"
 		self_modulate.a = 0.5 if corpo.current_state==corpo.PlayerState.DEATH else 1.0
+	elif "armado" in corpo and corpo.armado:
+		desejada = &"Pre-explosion"
 	elif morto:
 		desejada = &"Dead"
 	elif corpo.recuo_restante>0 and animacoes.has_animation("Damage"):
@@ -100,6 +102,7 @@ func _atualizar(delta: float):
 	for i in range(animacoes.get_frame_count(atual)): total += animacoes.get_frame_duration(atual,i)
 	var fps = animacoes.get_animation_speed(atual)
 	var cursor = tempo*fps
+	if protagonista and atual == &"Attack": cursor = tempo / 0.25 * total
 	if sincronizar and duracao_estado>0: cursor=tempo/duracao_estado*total
 	if animacoes.get_animation_loop(atual) and not sincronizar: cursor=fmod(cursor,total)
 	if morto and cursor>=total:

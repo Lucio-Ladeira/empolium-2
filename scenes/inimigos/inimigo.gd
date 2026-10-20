@@ -6,6 +6,7 @@ const Catalogo = preload("res://scenes/itens/melhorias.gd")
 const Drop = preload("res://scenes/itens/drop.gd")
 @export_enum("comum", "trojan", "virus") var tipo_drop: String = "trojan"
 var loot_gerado: bool = false
+var provocado: bool = false
 
 @export var vida_maxima: int = 3
 @export var velocidade: float = 48.0
@@ -38,6 +39,9 @@ func _ready():
 func alvo_valido() -> bool:
 	return is_instance_valid(jogador) and jogador.vida > 0
 
+func deve_perseguir() -> bool:
+	return alvo_valido() and (provocado or (global_position.distance_to(jogador.global_position) < alcance_visao and linha_livre(jogador.global_position)))
+
 func linha_livre(destino: Vector2) -> bool:
 	var consulta = PhysicsRayQueryParameters2D.create(global_position + Vector2(0, 10), destino + Vector2(0, 10), 1)
 	return get_world_2d().direct_space_state.intersect_ray(consulta).is_empty()
@@ -56,7 +60,7 @@ func _physics_process(delta):
 	fase += delta
 	velocity = Vector2.ZERO
 	var distancia = global_position.distance_to(jogador.global_position) if alvo_valido() else INF
-	var jogador_visivel = distancia < alcance_visao and linha_livre(jogador.global_position)
+	var jogador_visivel = deve_perseguir()
 	match estado:
 		Estado.PATRULHA:
 			var destino = origem + Vector2(-40, 0) if ponto == 1 else origem
@@ -66,7 +70,7 @@ func _physics_process(delta):
 			if jogador_visivel:
 				estado = Estado.PERSEGUIR
 		Estado.PERSEGUIR:
-			if not jogador_visivel or global_position.distance_to(origem) > 190:
+			if not jogador_visivel or (not provocado and global_position.distance_to(origem) > 190):
 				estado = Estado.PATRULHA
 			elif distancia < (110.0 if golpes % 3 == 2 else 30.0) and linha_livre(jogador.global_position):
 				direcao = global_position.direction_to(jogador.global_position)
@@ -109,6 +113,7 @@ func andar(destino: Vector2, rapidez: float):
 func dano(valor: float, direcao_impacto: Vector2 = Vector2.ZERO, aplicar_knockback: bool = true):
 	if estado == Estado.MORTO or valor <= 0:
 		return
+	provocado = true
 	vida = maxf(0.0, vida - valor)
 	if vida > 0:
 		if aplicar_knockback:
@@ -131,6 +136,7 @@ func dano(valor: float, direcao_impacto: Vector2 = Vector2.ZERO, aplicar_knockba
 	queue_redraw()
 
 func resetar():
+	provocado = false
 	loot_gerado = false
 	recuo_restante = 0.0
 	direcao_recuo = Vector2.ZERO
@@ -148,19 +154,7 @@ func resetar():
 	show()
 
 func _draw():
-	if estado == Estado.MORTO:
-		return
-	draw_rect(Rect2(-12, -18, 24, 3), Color(0.15, 0.05, 0.05))
-	draw_rect(Rect2(-12, -18, 24.0 * vida / vida_maxima, 3), Color(0.9, 0.2, 0.25))
-
-
-
-
-
-
-
-
-
+	pass
 
 func gerar_drops():
 	if loot_gerado:

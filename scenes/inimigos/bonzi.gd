@@ -28,9 +28,19 @@ var rng = RandomNumberGenerator.new()
 var concluido: bool = false
 var bananas: Array[Dictionary] = []
 var item_roubado: Dictionary = {}
+var textura_item_roubado: Texture2D
 var item_solto: bool = false
 var drop_roubado: Node2D
+var banana_surf: float = 0.0
+const PRANCHA = preload("res://assets/boss/prancha.svg")
 var surf_acertou: bool = false
+var apresentacao: float = 3.0
+var efeitos: Control
+var tremor: float = 0.0
+var camera: Camera2D
+var camera_offset: Vector2
+const BANANA = preload("res://assets/boss/banana.png")
+const COCO = preload("res://assets/boss/coco.png")
 var flash_restante: float = 0.0
 const Catalogo = preload("res://scenes/itens/melhorias.gd")
 
@@ -56,17 +66,35 @@ func _ready():
 	colisao.position.y = 10
 	add_child(colisao)
 	sprite = AnimatedSprite2D.new()
-	sprite.sprite_frames = preload("res://assets/artes_equipe/Skull-virus/animacoes.tres")
+	sprite.sprite_frames = SpriteFrames.new()
+	for nome in ["Stand", "Atack", "Dead"]:
+		sprite.sprite_frames.add_animation(nome)
+		sprite.sprite_frames.add_frame(nome, preload("res://assets/boss/bonzi.png"))
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.scale = Vector2.ONE * 1.5
-	sprite.offset = Vector2(-3,-28)
+	sprite.scale = Vector2.ONE * 0.75
+	sprite.offset = Vector2(0,-60)
 	sprite.position.y = 10
 	sprite.modulate = Color(1.0,0.65,1.0)
+	var material_bonzi = ShaderMaterial.new()
+	material_bonzi.shader = preload("res://assets/boss/bonzi.gdshader")
+	sprite.material = material_bonzi
 	add_child(sprite)
 	sprite.play("Stand")
 	_criar_interface()
+	camera = jogador.get_node_or_null("Camera2D")
+	if camera: camera_offset = camera.offset
+	jogador.controle_bloqueado = true
+	jogador.velocity = Vector2.ZERO
 
 func _physics_process(delta):
+	if is_instance_valid(camera) and tremor > 0:
+		tremor = maxf(0, tremor-delta)
+		camera.offset = camera_offset + Vector2(rng.randf_range(-1,1),rng.randf_range(-1,1))*4*tremor/0.35
+	if apresentacao > 0:
+		apresentacao = maxf(0, apresentacao-delta)
+		efeitos.intro = apresentacao
+		if apresentacao == 0: _liberar_jogador()
+		return
 	if acao == Acao.MORTO:
 		flash_restante = maxf(0.0, flash_restante - delta)
 		_atualizar_cor_sprite()
@@ -109,6 +137,8 @@ func _physics_process(delta):
 			altura = 280.0 * maxf(0,tempo) / 0.25
 			if tempo <= 0:
 				altura = 0
+				tremor = 0.35
+				_explosao_queda()
 				var casca = -1
 				for i in range(bananas.size()):
 					if global_position.distance_to(bananas[i].pos) < 24:
@@ -154,6 +184,13 @@ func _physics_process(delta):
 				var progresso = clampf(1.0-tempo/1.6,0,1)
 				var anterior = global_position
 				global_position = alvo_surf + Vector2(lerpf(-480,480,progresso),0)
+				banana_surf -= delta
+				var pos_banana = global_position + Vector2(-32,10)
+				if banana_surf <= 0:
+					banana_surf = 0.13
+					if Geometry2D.is_point_in_polygon(pos_banana,limites):
+						bananas.append({"pos":pos_banana,"aviso":0.5,"vida":35.0,"queda":true})
+						while bananas.size() > 18: bananas.pop_front()
 				if progresso > 0.02 and not surf_acertou:
 					var perto = Geometry2D.get_closest_point_to_segment(jogador.global_position,anterior,global_position)
 					if perto.distance_to(jogador.global_position) < 24:
@@ -223,11 +260,13 @@ func _dentro_arena(pos: Vector2) -> Vector2:
 func dano(valor: float, _direcao: Vector2 = Vector2.ZERO, _knockback: bool = true):
 	if acao == Acao.MORTO or valor <= 0: return
 	# O atalho de emergência continua podendo encerrar o encontro.
-	if acao in [Acao.CIPO,Acao.QUEDA,Acao.SURF] and valor < vida: return
+	if (apresentacao > 0 or acao in [Acao.CIPO,Acao.QUEDA,Acao.SURF]) and valor < vida: return
 	flash_restante = 0.16
 	_atualizar_cor_sprite()
 	vida = maxf(0,vida-valor*(1.5 if acao == Acao.CAIDO else 1.0))
 	if vida <= 0:
+		apresentacao = 0
+		efeitos.intro = 0
 		acao = Acao.MORTO
 		concluido = true
 		_soltar_item()
@@ -253,13 +292,14 @@ func dano(valor: float, _direcao: Vector2 = Vector2.ZERO, _knockback: bool = tru
 		$Corpo.set_deferred("disabled",true)
 		alvo_surf = jogador.global_position
 		surf_acertou = false
+		banana_surf = 0
 		jogador.controle_bloqueado = true
 		jogador.velocity = Vector2.ZERO
 
 		sprite.show()
 
 func _atualizar_cor_sprite():
-	var cor_normal = Color(1.0,0.4,0.8) if fase == 2 else Color(1.0,0.65,1.0)
+	var cor_normal = Color(1.0,0.85,0.95) if fase == 2 else Color.WHITE
 	sprite.modulate = Color(1.5,0.6,0.6) if flash_restante > 0.0 else cor_normal
 
 func _atualizar_cocos(delta):
@@ -280,31 +320,39 @@ func _draw():
 	if acao == Acao.MORTO: return
 	for casca in bananas:
 		var pos = to_local(casca.pos)
-		draw_arc(pos,7,0.15,PI-0.15,10,Color(1,0.85,0.15,0.5 if casca.aviso > 0 else 1),3)
-		draw_line(pos+Vector2(-6,1),pos+Vector2(-9,-4),Color("fff09a"),2)
-	if acao == Acao.ROUBO and not item_roubado.is_empty():
-		draw_texture_rect(Catalogo.icone(item_roubado.tipo,item_roubado.get("chip",0)),Rect2(-12,-80,24,28),false)
-	if acao == Acao.SURF and tempo > 1.6:
-		var aviso = to_local(alvo_surf)
-		draw_line(aviso-Vector2(220,0),aviso+Vector2(220,0),Color(0.2,0.9,1,0.7),3)
+		if casca.get("queda",false): pos.y -= 42.0 * clampf(casca.aviso/0.5,0,1)
+		draw_texture_rect(BANANA,Rect2(pos-Vector2(10,10),Vector2(20,20)),false,Color(1,1,1,0.5 if casca.aviso > 0 else 1))
+	if acao == Acao.ROUBO and textura_item_roubado:
+		draw_texture_rect(textura_item_roubado,Rect2(-12,-80,24,28),false)
 	for coco in cocos: _desenhar_coco(to_local(coco.pos))
 	if acao == Acao.COCOS:
 		for i in range(3):
 			var angulo = tempo*5 + i*TAU/3
 			_desenhar_coco(Vector2(cos(angulo)*28,-45+sin(angulo)*14))
 	if acao in [Acao.CIPO,Acao.QUEDA]:
-		var ponto = to_local(alvo_queda)
+		var ponto = to_local(alvo_queda) + Vector2(0,10)
+		var distancia_chao = clampf(altura / 280.0,0,1)
+		var raio_impacto = 38.0 if fase == 1 else 46.0
+		var raio_sombra = lerpf(19.0,43.0,distancia_chao)
+		var opacidade = lerpf(0.16,0.055,distancia_chao)
 		draw_set_transform(ponto,0,Vector2(1,0.5))
-		draw_circle(Vector2.ZERO,30,Color(0,0,0,0.5))
-		draw_arc(Vector2.ZERO,38 if fase == 1 else 46,0,TAU,48,Color(1,0.35,0.7,0.85),1.5)
+		# Camadas translúcidas deixam a borda suave e o centro mais denso.
+		for camada in range(5):
+			draw_circle(Vector2.ZERO,raio_sombra*(1.0-camada*0.14),Color(0.025,0.015,0.06,opacidade),true,-1,true)
+		var raio_aviso = lerpf(raio_impacto,raio_impacto+26.0,distancia_chao)
+		var cor = Color(0.45,0.65,1.0,lerpf(0.9,0.45,distancia_chao))
+		draw_arc(Vector2.ZERO,raio_aviso,0,TAU,72,Color(cor,0.12),5.0,true)
+		draw_arc(Vector2.ZERO,raio_aviso,0,TAU,72,cor,1.2,true)
+		for i in range(4):
+			var angulo = i*PI*0.5
+			draw_arc(Vector2.ZERO,raio_impacto,angulo-0.12,angulo+0.12,8,Color(0.7,0.85,1,0.65),1.5,true)
 		draw_set_transform(Vector2.ZERO)
 		if altura < 220: draw_line(Vector2(0,-300),Vector2(0,-35-altura),Color("6ea953"),3)
 	if acao == Acao.SURF:
-		draw_colored_polygon(PackedVector2Array([Vector2(-38,10),Vector2(-25,18),Vector2(30,18),Vector2(42,8)]),Color("42e5ff"))
+		draw_texture_rect(PRANCHA,Rect2(-42,4,84,20),false)
 
 func _desenhar_coco(pos: Vector2):
-	draw_circle(pos,6,Color("75492d"))
-	draw_arc(pos,6,0,TAU,12,Color("e0b580"),1.5)
+	draw_texture_rect(COCO,Rect2(pos-Vector2(8,8),Vector2(16,16)),false)
 
 func _criar_interface():
 	interface = CanvasLayer.new()
@@ -320,44 +368,70 @@ func _criar_interface():
 	titulo.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	titulo.offset_left = -260
 	titulo.offset_right = 260
-	titulo.offset_top = 24
+	titulo.offset_top = 132
 	titulo.add_theme_font_size_override("font_size",24)
 	titulo.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	raiz_ui.add_child(titulo)
 	barra = ProgressBar.new()
 	barra.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	barra.offset_left = -260
-	barra.offset_right = 260
-	barra.offset_top = 60
-	barra.offset_bottom = 80
+	barra.offset_left = -356
+	barra.offset_right = 356
+	barra.offset_top = 74
+	barra.offset_bottom = 121
 	barra.max_value = vida_maxima
 	barra.value = vida
 	barra.show_percentage = false
 	barra.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var fundo = StyleBoxFlat.new()
+	fundo.bg_color = Color(0.06,0.02,0.09,0.85)
+	var preenchimento = StyleBoxFlat.new()
+	preenchimento.bg_color = Color("a948d3")
+	barra.add_theme_stylebox_override("background",fundo)
+	barra.add_theme_stylebox_override("fill",preenchimento)
 	raiz_ui.add_child(barra)
+	var moldura = TextureRect.new()
+	moldura.texture = preload("res://assets/boss/bossbar.png")
+	moldura.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	moldura.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	moldura.offset_left = -360
+	moldura.offset_right = 360
+	moldura.offset_top = 36
+	moldura.offset_bottom = 126
+	moldura.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	raiz_ui.add_child(moldura)
+	efeitos = preload("res://scenes/inimigos/efeitos_bonzi.gd").new()
+	efeitos.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	efeitos.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	raiz_ui.add_child(efeitos)
 
 func _popup():
 	popups = popups.filter(func(p): return is_instance_valid(p) and not p.is_queued_for_deletion())
 	if popups.size() >= 9: return
 	var tamanho = get_viewport_rect().size
 	var janela = PanelContainer.new()
-	janela.custom_minimum_size = Vector2(300,150)
-	janela.position = Vector2(rng.randf_range(tamanho.x*0.16,maxf(tamanho.x*0.16,tamanho.x-340)),rng.randf_range(110,maxf(110,tamanho.y-210)))
+	janela.custom_minimum_size = Vector2(380,230)
+	janela.position = Vector2(rng.randf_range(tamanho.x*0.16,maxf(tamanho.x*0.16,tamanho.x-420)),rng.randf_range(110,maxf(110,tamanho.y-290)))
 	var estilo = StyleBoxFlat.new()
-	estilo.bg_color = Color("35224d")
-	estilo.border_color = Color("d58aff")
-	estilo.set_border_width_all(3)
+	estilo.bg_color = Color("050d19")
+	estilo.border_color = Color("39baff")
+	estilo.set_border_width_all(2)
+	estilo.shadow_color = Color(0,0.5,1,0.24)
+	estilo.shadow_size = 10
 	estilo.content_margin_left = 12
 	estilo.content_margin_right = 12
 	estilo.content_margin_top = 10
 	estilo.content_margin_bottom = 10
 	janela.add_theme_stylebox_override("panel",estilo)
+	var mono = SystemFont.new()
+	mono.font_names = PackedStringArray(["Consolas","Courier New"])
+	janela.add_theme_font_override("font",mono)
+	janela.add_theme_color_override("font_color",Color("6acaff"))
 	var coluna = VBoxContainer.new()
 	janela.add_child(coluna)
 	var cabecalho = HBoxContainer.new()
 	coluna.add_child(cabecalho)
 	var nome = Label.new()
-	nome.text = "BonziBuddy.exe"
+	nome.text = "[ROOT] BONZI://INJECT.exe"
 	nome.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cabecalho.add_child(nome)
 	var fechar = Button.new()
@@ -366,16 +440,40 @@ func _popup():
 	cabecalho.add_child(fechar)
 	fechar.pressed.connect(janela.queue_free)
 	var texto = Label.new()
-	texto.text = ["Seu novo melhor amigo!\nAceita mais uma notificação?","ATENÇÃO!\nCocos se aproximando...","Você ganhou um pop-up!\nFeche para enxergar melhor."][rng.randi_range(0,2)]
+	texto.text = ["> INVASÃO DETECTADA\n> injetando bonzi.dll... [OK]\n> acesso ao sistema: ROOT","> FIREWALL COMPROMETIDO\n> interceptando controles...\n> processo hostil: ATIVO","> CONEXÃO NÃO AUTORIZADA\n> copiando dados do jogador...\n> permissões: SOBRESCRITAS"][rng.randi_range(0,2)]
 	texto.add_theme_font_size_override("font_size",18)
 	coluna.add_child(texto)
+	var dados = Label.new()
+	dados.text = "01001000 01000001 01000011 01001011\n0x%04X  //  SESSION HIJACKED" % rng.randi_range(0,65535)
+	dados.add_theme_font_size_override("font_size",14)
+	dados.add_theme_color_override("font_color",Color("237cbd"))
+	coluna.add_child(dados)
+	var carga = ProgressBar.new()
+	carga.custom_minimum_size.y = 8
+	carga.show_percentage = false
+	carga.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var verde = StyleBoxFlat.new()
+	verde.bg_color = Color("30b6ff")
+	carga.add_theme_stylebox_override("fill",verde)
+	coluna.add_child(carga)
+	var aviso = Label.new()
+	aviso.text = "[!] SISTEMA SOB CONTROLE DO BONZI_"
+	aviso.add_theme_font_size_override("font_size",14)
+	coluna.add_child(aviso)
 	raiz_ui.add_child(janela)
+	var animacao = janela.create_tween()
+	animacao.tween_property(carga,"value",100.0,1.2)
+	var piscar = aviso.create_tween().set_loops()
+	piscar.tween_property(aviso,"modulate:a",0.35,0.45)
+	piscar.tween_property(aviso,"modulate:a",1.0,0.45)
 	popups.append(janela)
+	efeitos.glitch = 0.35
 
 func _liberar_jogador():
 	if is_instance_valid(jogador): jogador.controle_bloqueado = false
 
 func _exit_tree():
+	if is_instance_valid(camera): camera.offset = camera_offset
 	_liberar_jogador()
 	if not item_roubado.is_empty() and is_instance_valid(jogador):
 		jogador.coletar_drop(item_roubado)
@@ -406,6 +504,9 @@ func _roubar_item():
 		jogador.moedas -= 1
 		jogador.moedas_label.text = str(jogador.moedas)
 		item_roubado = {"tipo":"moeda","quantidade":1}
+
+	if not item_roubado.is_empty():
+		textura_item_roubado = Catalogo.icone(item_roubado.tipo,item_roubado.get("chip",0))
 
 func _soltar_item():
 	if item_roubado.is_empty() or item_solto: return
@@ -440,3 +541,13 @@ func _atualizar_bananas(delta):
 		elif casca.aviso <= 0 and jogador.tempo_escorregao <= 0 and not jogador.controle_bloqueado and jogador.global_position.distance_to(casca.pos) < 12:
 			jogador.escorregar()
 			bananas.remove_at(i)
+
+func _explosao_queda():
+	var efeito = AnimatedSprite2D.new()
+	efeito.sprite_frames = preload("res://assets/explosao_boss/animacoes.tres")
+	efeito.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	efeito.z_index = 2
+	efeito.position = get_parent().to_local(global_position + Vector2(0,-8))
+	efeito.animation_finished.connect(efeito.queue_free)
+	get_parent().add_child(efeito)
+	efeito.play("default")

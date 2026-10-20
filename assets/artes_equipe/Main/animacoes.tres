@@ -9,6 +9,10 @@
 [ext_resource type="Texture2D" path="res://assets/artes_equipe/Main/Walk-fire.png" id="a6"]
 [ext_resource type="Texture2D" path="res://assets/artes_equipe/Main/Arm-shoting.png" id="a7"]
 
+[ext_resource type="Texture2D" path="res://assets/artes_equipe/Main/Attack.png" id="new0"]
+
+[ext_resource type="Texture2D" path="res://assets/artes_equipe/Main/Attack-upper.png" id="new1"]
+
 [sub_resource type="AtlasTexture" id="f0_0"]
 atlas = ExtResource("a0")
 region = Rect2(0, 0, 64, 64)
@@ -205,6 +209,38 @@ region = Rect2(192, 0, 64, 64)
 atlas = ExtResource("a7")
 region = Rect2(256, 0, 64, 64)
 
+[sub_resource type="AtlasTexture" id="new0_0"]
+atlas = ExtResource("new0")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="new0_1"]
+atlas = ExtResource("new0")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="new0_2"]
+atlas = ExtResource("new0")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="new0_3"]
+atlas = ExtResource("new0")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="new1_0"]
+atlas = ExtResource("new1")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="new1_1"]
+atlas = ExtResource("new1")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="new1_2"]
+atlas = ExtResource("new1")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="new1_3"]
+atlas = ExtResource("new1")
+region = Rect2(192, 0, 64, 64)
+
 [resource]
 animations = [{"name": &"Walk", "speed": 6.0, "loop": true, "frames": [{"duration": 1.0, "texture": SubResource("f0_0")},{"duration": 1.0, "texture": SubResource("f0_1")},{"duration": 1.0, "texture": SubResource("f0_2")},{"duration": 1.0, "texture": SubResource("f0_3")},{"duration": 1.0, "texture": SubResource("f0_4")},{"duration": 1.0, "texture": SubResource("f0_5")},{"duration": 1.0, "texture": SubResource("f0_6")},{"duration": 1.0, "texture": SubResource("f0_7")},{"duration": 1.0, "texture": SubResource("f0_8")},{"duration": 1.0, "texture": SubResource("f0_9")}]},
 {"name": &"Stand", "speed": 6.0, "loop": true, "frames": [{"duration": 1.0, "texture": SubResource("f1_0")},{"duration": 1.0, "texture": SubResource("f1_1")},{"duration": 1.0, "texture": SubResource("f1_2")},{"duration": 1.0, "texture": SubResource("f1_3")}]},
@@ -213,4 +249,6 @@ animations = [{"name": &"Walk", "speed": 6.0, "loop": true, "frames": [{"duratio
 {"name": &"Legs", "speed": 6.0, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("f4_0")},{"duration": 1.0, "texture": SubResource("f4_1")},{"duration": 1.0, "texture": SubResource("f4_2")},{"duration": 1.0, "texture": SubResource("f4_3")},{"duration": 1.0, "texture": SubResource("f4_4")},{"duration": 1.0, "texture": SubResource("f4_5")},{"duration": 1.0, "texture": SubResource("f4_6")},{"duration": 1.0, "texture": SubResource("f4_7")}]},
 {"name": &"Uperbody-shoting", "speed": 6.0, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("f5_0")},{"duration": 1.0, "texture": SubResource("f5_1")},{"duration": 1.0, "texture": SubResource("f5_2")},{"duration": 1.0, "texture": SubResource("f5_3")},{"duration": 1.0, "texture": SubResource("f5_4")}]},
 {"name": &"Walk-fire", "speed": 5.4, "loop": true, "frames": [{"duration": 1.0, "texture": SubResource("f6_0")},{"duration": 1.0, "texture": SubResource("f6_1")},{"duration": 1.0, "texture": SubResource("f6_2")},{"duration": 1.0, "texture": SubResource("f6_3")},{"duration": 1.0, "texture": SubResource("f6_4")},{"duration": 1.0, "texture": SubResource("f6_5")},{"duration": 1.0, "texture": SubResource("f6_6")},{"duration": 1.0, "texture": SubResource("f6_7")}]},
-{"name": &"Arm-shoting", "speed": 6.0, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("f7_0")},{"duration": 1.0, "texture": SubResource("f7_1")},{"duration": 1.0, "texture": SubResource("f7_2")},{"duration": 1.0, "texture": SubResource("f7_3")},{"duration": 1.0, "texture": SubResource("f7_4")}]}]
+{"name": &"Arm-shoting", "speed": 6.0, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("f7_0")},{"duration": 1.0, "texture": SubResource("f7_1")},{"duration": 1.0, "texture": SubResource("f7_2")},{"duration": 1.0, "texture": SubResource("f7_3")},{"duration": 1.0, "texture": SubResource("f7_4")}]},
+{"name": &"Attack", "speed": 6.0, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("new0_0")},{"duration": 1.0, "texture": SubResource("new0_1")},{"duration": 1.0, "texture": SubResource("new0_2")},{"duration": 1.0, "texture": SubResource("new0_3")}]},
+{"name": &"Attack-upper", "speed": 6.0, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("new1_0")},{"duration": 1.0, "texture": SubResource("new1_1")},{"duration": 1.0, "texture": SubResource("new1_2")},{"duration": 1.0, "texture": SubResource("new1_3")}]}]

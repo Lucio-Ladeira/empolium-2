@@ -4,13 +4,18 @@
 [ext_resource type="Script" path="res://scenes/inimigos/virus.gd" id="2"]
 [ext_resource type="Texture2D" path="res://assets/inimigos/virus.svg" id="3"]
 
+[ext_resource type="Script" path="res://scenes/arte_personagem.gd" id="arte_creeper"]
+[ext_resource type="SpriteFrames" path="res://assets/artes_equipe/Creeper/animacoes.tres" id="creeper"]
+
 [node name="Virus" instance=ExtResource("1")]
 script = ExtResource("2")
 tipo_drop = "virus"
 velocidade = 20.0
 
 [node name="Sprite2D" parent="." index="0"]
-script = null
+script = ExtResource("arte_creeper")
+animacoes = ExtResource("creeper")
+escala_arte = 0.65
 texture = ExtResource("3")
 scale = Vector2(0.8, 0.8)
 

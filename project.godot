@@ -17,6 +17,10 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Sons="*res://scenes/sons.gd"
+
+FimPartida="*res://scenes/menus/fim_partida.gd"
+
 OSVisualFX="*res://os/effects/os_visual_fx.gd"
 
 [display]

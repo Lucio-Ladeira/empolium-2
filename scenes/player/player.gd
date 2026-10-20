@@ -5,6 +5,7 @@ const Catalogo = preload("res://scenes/itens/melhorias.gd")
 var moedas: int = 0
 var controle_bloqueado: bool = false
 var tempo_escorregao: float = 0.0
+var penalidade_morte_aplicada: bool = false
 var inventario: Array[int] = [0, 0, 0, 0, 0]
 var equipados: Array[int] = []
 var vida_maxima: int = 5
@@ -124,6 +125,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	Sons.andar(current_state == PlayerState.MOVE and velocity.length() > 5 and not controle_bloqueado and tempo_escorregao <= 0)
 	if controle_bloqueado:
 		velocity = Vector2.ZERO
 		return
@@ -262,6 +264,7 @@ func _on_animation_state_finished(state: StringName) -> void:
 # =========================================================
 
 func iniciar_dash() -> void:
+	Sons.tocar("dashslip")
 	current_state = PlayerState.DASH
 
 	estamina -= DASH_COST
@@ -296,6 +299,7 @@ func dano(vlr_dano: int, direcao_impacto: Vector2 = Vector2.ZERO) -> void:
 	if vida <= 0:
 		return
 
+	Sons.tocar("hit")
 	vida = maxi(0, vida - vlr_dano)
 	invulnerabilidade = 0.7
 
@@ -322,6 +326,28 @@ func recuar(delta: float) -> void:
 
 
 func morre() -> void:
+	if penalidade_morte_aplicada: return
+	penalidade_morte_aplicada = true
+	# Metade inteira permanece; números ímpares arredondam a perda para cima.
+	moedas = floori(moedas * 0.5)
+	moedas_label.text = str(moedas)
+	var perdido = -1
+	if not equipados.is_empty():
+		var slot = randi_range(0,equipados.size()-1)
+		perdido = equipados[slot]
+		equipados.remove_at(slot)
+	else:
+		var total = 0
+		for quantidade in inventario: total += quantidade
+		if total > 0:
+			var sorteio = randi_range(0,total-1)
+			for i in range(inventario.size()):
+				sorteio -= inventario[i]
+				if sorteio < 0:
+					perdido = i
+					break
+	if perdido >= 0: inventario[perdido] = maxi(0,inventario[perdido]-1)
+	recalcular_melhorias()
 	tempo_escorregao = 0
 	$sprites.rotation = 0
 	recuo_restante = 0.0
@@ -376,6 +402,7 @@ func _atingir_inimigo(corpo: Node2D) -> void:
 			corpo.dano(multiplicador_dano, global_position.direction_to(corpo.global_position) if not global_position.is_equal_approx(corpo.global_position) else last_direction)
 
 func respawn() -> void:
+	penalidade_morte_aplicada = false
 	tempo_escorregao = 0
 	$sprites.rotation = 0
 	controle_bloqueado = false
@@ -414,6 +441,7 @@ func atirar() -> void:
 	var mira = get_global_mouse_position() - origem_tiro
 	if mira.length_squared() <= 1.0:
 		return
+	Sons.tocar("Shot",-17)
 	var tiro = PROJETIL.instantiate()
 	tiro.direcao = mira.normalized()
 	tiro.dano = dano_tiro * multiplicador_dano
@@ -471,6 +499,7 @@ func recalcular_melhorias():
 
 func escorregar():
 	if vida <= 0 or tempo_escorregao > 0 or controle_bloqueado: return
+	Sons.tocar("dashslip")
 	tempo_escorregao = 3.0
 	current_state = PlayerState.MOVE
 	velocity = Vector2.ZERO
@@ -480,3 +509,6 @@ func escorregar():
 	$dano/CollisionShape2D.set_deferred("disabled",true)
 	anim_state.start("idle",true)
 	$sprites.rotation = -PI*0.5
+
+func _exit_tree():
+	Sons.andar(false)

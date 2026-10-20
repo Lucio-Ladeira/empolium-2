@@ -137,6 +137,7 @@ func show_login() -> void:
 
 
 func show_desktop() -> void:
+    Sons.tocar("Comp-aberto")
     clear_screen()
     current_screen = DESKTOP_SCENE.instantiate()
     add_child(current_screen)

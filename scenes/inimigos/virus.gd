@@ -24,9 +24,9 @@ func _physics_process(delta):
 		recuo_restante = maxf(0.0, recuo_restante - delta)
 	elif not armado and alvo_valido():
 		var distancia = global_position.distance_to(jogador.global_position)
-		if distancia < alcance_visao and linha_livre(jogador.global_position):
+		if deve_perseguir():
 			estado = Estado.PERSEGUIR
-			if distancia <= distancia_ativacao:
+			if distancia <= distancia_ativacao and linha_livre(jogador.global_position):
 				armado = true
 				estado = Estado.PREPARAR
 				restante = tempo_preparacao
@@ -49,6 +49,15 @@ func explodir():
 		return
 	explodiu = true
 	gerar_drops()
+	var explosao = AnimatedSprite2D.new()
+	explosao.sprite_frames = preload("res://assets/artes_equipe/Creeper/animacoes.tres")
+	explosao.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	explosao.scale = Vector2.ONE * 0.65
+	explosao.position = position + Vector2(0,-10)
+	explosao.z_index = z_index
+	explosao.animation_finished.connect(explosao.queue_free)
+	get_parent().add_child(explosao)
+	explosao.play("Explosion")
 	armado = false
 	estado = Estado.MORTO
 	vida = 0
@@ -73,9 +82,6 @@ func resetar():
 
 func _draw():
 	if explodiu:
-		var progresso = 1.0 - restante / 0.4
-		draw_circle(Vector2.ZERO, raio_explosao * (0.3 + progresso * 0.7), Color(1, 0.4, 0.05, (1.0 - progresso) * 0.55))
-		draw_arc(Vector2.ZERO, raio_explosao * progresso, 0, TAU, 48, Color(1, 0.85, 0.2, 1.0 - progresso), 3)
 		return
 	super._draw()
 	if armado and estado != Estado.MORTO:

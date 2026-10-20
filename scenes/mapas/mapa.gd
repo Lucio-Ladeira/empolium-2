@@ -27,13 +27,12 @@ const DIRECOES = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 @export var seed_mapa: int = 0 # Zero sorteia; qualquer outro valor reproduz o mapa.
 @export_range(2, 6) var combates_min: int = 3
 @export_range(2, 6) var combates_max: int = 4
-@export_range(1, 6) var inimigos_min: int = 2
-@export_range(1, 6) var inimigos_max: int = 3
+@export_range(1, 6) var inimigos_min: int = 4
+@export_range(1, 6) var inimigos_max: int = 6
 @export_range(19, 27, 2) var tamanho_sala: int = 23
 @export_range(5, 9, 2) var largura_corredor: int = 5
 @export var tipos_inimigos: Array[PackedScene] = [preload("res://scenes/inimigos/caveira_virus.tscn"), preload("res://scenes/inimigos/malware.tscn"), preload("res://scenes/inimigos/inimigo.tscn"), preload("res://scenes/inimigos/virus.tscn")]
 @export var cena_boss: PackedScene
-@export var cenas_npcs: Array[PackedScene] = []
 @export var cena_vendedor: PackedScene
 var seed_atual: int
 var etapa: int = 1
@@ -161,7 +160,7 @@ func gerar(seed_nova: int = 0):
 			ligacoes.append(Vector2i(i, i + 1))
 		# Sorteia entre todas as posições livres ligadas a salas de combate.
 		var bases_especiais: Array[int] = []
-		for tipo in ["npc", "loja"]:
+		for tipo in ["loja"]:
 			var opcoes: Array = []
 			for base in range(1, quantidade + 1):
 				if base in bases_especiais: continue
@@ -309,17 +308,10 @@ func _montar_sala(sala):
 		else:
 			sala.encontro.assign([preload("res://scenes/inimigos/inimigo.tscn"), preload("res://scenes/inimigos/virus.tscn")])
 			sala.rotulo.text = "NÚCLEO • ENCONTRO FINAL"
-	elif sala.tipo == "npc":
-		for i in range(3):
-			var ponto = _marcador(sala, "NPC%d" % (i+1), sala.pontos[i])
-			if i < cenas_npcs.size() and cenas_npcs[i]: ponto.add_child(cenas_npcs[i].instantiate())
-		if cenas_npcs.is_empty():
-			for i in range(3):
-				var npc = NPC.new()
-				npc.papel = ["guia", "medica", "tecnico"][i]
-				sala.get_node("NPC%d" % (i+1)).add_child(npc)
 	elif sala.tipo == "loja":
 		var vendedor = _marcador(sala, "Vendedor", pos)
+		vendedor.y_sort_enabled = true
+		vendedor.z_index = 1
 		if cena_vendedor: vendedor.add_child(cena_vendedor.instantiate())
 		else:
 			var npc = NPC.new()
@@ -376,7 +368,8 @@ func _sala_concluida(_sala):
 		partida_concluida = true
 		var pontuacao = floori(tempo_partida)
 		resultado.text = "PARTIDA CONCLUÍDA\nTEMPO %s\nPONTUAÇÃO %d" % [_formatar_tempo(tempo_partida), pontuacao]
-		resultado.show()
+		resultado.hide()
+		FimPartida.mostrar_creditos()
 		get_tree().paused = true
 
 func _atualizar_objetivo():
@@ -422,10 +415,11 @@ func _decorar_sala(sala):
 	var centro = sala.retangulo.get_center()
 	for tentativa in range(80):
 		if ocupadas.size() >= quantidade: break
-		var celula = Vector2i(rng.randi_range(sala.retangulo.position.x+2, sala.retangulo.end.x-3), rng.randi_range(sala.retangulo.position.y+2, sala.retangulo.end.y-3))
+		var celula = Vector2i(rng.randi_range(sala.retangulo.position.x+5, sala.retangulo.end.x-6), rng.randi_range(sala.retangulo.position.y+5, sala.retangulo.end.y-6))
 		# Mantém os corredores centrais, NPCs e pontos de chegada livres.
-		if absi(celula.x-centro.x) <= 2 or absi(celula.y-centro.y) <= 2: continue
+		if absi(celula.x-centro.x) <= 1 or absi(celula.y-centro.y) <= 1: continue
 		var pos = chao.map_to_local(celula)
+		if sala.tipo == "loja" and pos.distance_to(chao.map_to_local(centro)) < 100: continue
 		if sala.pontos.any(func(p): return p.distance_to(pos) < 40): continue
 		if ocupadas.any(func(p): return p.distance_to(pos) < 38): continue
 		ocupadas.append(pos)
@@ -492,4 +486,3 @@ func _unhandled_key_input(event: InputEvent):
 		jogador.invulnerabilidade = 0.0
 		jogador.dano(jogador.vida)
 		get_viewport().set_input_as_handled()
-

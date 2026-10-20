@@ -1,0 +1,6 @@
+[gd_resource type="SpriteFrames" format=3]
+[ext_resource type="Texture2D" path="res://assets/mercador/0.png" id="f0"]
+[ext_resource type="Texture2D" path="res://assets/mercador/1.png" id="f1"]
+[ext_resource type="Texture2D" path="res://assets/mercador/2.png" id="f2"]
+[resource]
+animations = [{"name": &"default", "speed": 10.0, "loop": true, "frames": [{"duration": 3.0, "texture": ExtResource("f0")},{"duration": 3.0, "texture": ExtResource("f1")},{"duration": 3.0, "texture": ExtResource("f2")}]}]

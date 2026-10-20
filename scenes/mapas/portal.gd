@@ -40,6 +40,7 @@ func tentar_usar() -> bool:
 		return false
 	if jogador.global_position.distance_to(global_position) > 45:
 		return false
+	Sons.tocar("portal")
 	usando = true
 	utilizado.emit()
 	return true

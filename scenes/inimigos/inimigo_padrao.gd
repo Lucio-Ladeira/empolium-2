@@ -19,11 +19,11 @@ func _physics_process(delta):
 	velocity = Vector2.ZERO
 	fase += delta
 	var distancia = global_position.distance_to(jogador.global_position) if alvo_valido() else INF
-	var visivel = distancia < alcance_visao and linha_livre(jogador.global_position)
+	var visivel = deve_perseguir()
 	if estado != Estado.ATACAR:
 		estado = Estado.PERSEGUIR if visivel else Estado.PATRULHA
 		if visivel:
-			if distancia <= 32.0 and tempo <= 0.0:
+			if distancia <= 32.0 and tempo <= 0.0 and linha_livre(jogador.global_position):
 				estado = Estado.ATACAR
 				direcao = global_position.direction_to(jogador.global_position)
 				if direcao.is_zero_approx():
@@ -31,7 +31,7 @@ func _physics_process(delta):
 				ataque_restante = duracao_avanco
 				acertou = false
 				tempo = intervalo_ataque
-			elif distancia > 23.0:
+			elif distancia > 23.0 or not linha_livre(jogador.global_position):
 				andar(jogador.global_position, velocidade)
 	if estado == Estado.ATACAR:
 		# Avanco curto com direcao fixa, usando a colisao normal do corpo.

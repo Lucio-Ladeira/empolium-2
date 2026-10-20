@@ -1,0 +1,3 @@
+Bonzi: https://github.com/7coil/BonziBuddy/blob/master/src/images/bonzi.png
+Personagem original: BONZI.COM Software.
+Bossbar, banana e coco: imagens fornecidas pelo usuário.
