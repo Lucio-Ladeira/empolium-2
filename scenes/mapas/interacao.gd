@@ -76,7 +76,6 @@ func _ready():
 	abas = HBoxContainer.new()
 	coluna.add_child(abas)
 	_botao(abas,"Comprar",_mudar_modo.bind(false))
-	_botao(abas,"Vender",_mudar_modo.bind(true))
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.custom_minimum_size.y = 85
@@ -174,10 +173,11 @@ func atualizar():
 
 func _negociar(indice: int):
 	if not aberto or not is_instance_valid(fonte): return
-	retorno.text = fonte.vender(indice) if modo_venda else fonte.comprar(indice)
+	retorno.text = fonte.comprar(indice)
 	atualizar()
 
 func _mudar_modo(venda: bool):
+	if venda: return
 	var abrir_compra = modo_venda and not venda
 	if abrir_compra: Sons.tocar("abriu-comp")
 	modo_venda = venda
@@ -263,8 +263,6 @@ func _criar_compra():
 	aviso_compra.position = Vector2(310,450)
 	aviso_compra.size = Vector2(420,44)
 	aviso_compra.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	var vender = _botao(compra,"Vender chips",_mudar_modo.bind(true))
-	vender.position = Vector2(320,505)
 	var sair = _botao(compra,"Fechar • Esc / E",fechar)
 	sair.position = Vector2(510,505)
 

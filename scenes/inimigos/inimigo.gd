@@ -7,6 +7,7 @@ const Drop = preload("res://scenes/itens/drop.gd")
 @export_enum("comum", "trojan", "virus") var tipo_drop: String = "trojan"
 var loot_gerado: bool = false
 var provocado: bool = false
+var flash_dano: Tween
 
 @export var vida_maxima: int = 3
 @export var velocidade: float = 48.0
@@ -114,6 +115,11 @@ func dano(valor: float, direcao_impacto: Vector2 = Vector2.ZERO, aplicar_knockba
 	if estado == Estado.MORTO or valor <= 0:
 		return
 	provocado = true
+	# Reação visual independente do knockback: também cobre projéteis.
+	if flash_dano: flash_dano.kill()
+	sprite.self_modulate = Color(1.8,0.45,0.45)
+	flash_dano = create_tween()
+	flash_dano.tween_property(sprite,"self_modulate",Color.WHITE,0.16)
 	vida = maxf(0.0, vida - valor)
 	if vida > 0:
 		if aplicar_knockback:
@@ -136,6 +142,8 @@ func dano(valor: float, direcao_impacto: Vector2 = Vector2.ZERO, aplicar_knockba
 	queue_redraw()
 
 func resetar():
+	if flash_dano: flash_dano.kill()
+	sprite.self_modulate = Color.WHITE
 	provocado = false
 	loot_gerado = false
 	recuo_restante = 0.0

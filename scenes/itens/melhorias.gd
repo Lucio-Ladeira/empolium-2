@@ -32,10 +32,13 @@ static func icone(tipo: String, chip: int = 0) -> Texture2D:
 		img.fill_rect(Rect2i(9, 10, 7, 3), Color("ff2862"))
 		img.fill_rect(Rect2i(11, 9, 3, 7), Color("ff2862"))
 	else:
-		img.fill_rect(Rect2i(2, 1, 16, 22), Color("15203b"))
-		img.fill_rect(Rect2i(4, 3, 12, 18), ITENS[chip].cor)
-		for x in [5, 9, 13]:
-			img.fill_rect(Rect2i(x, 4, 2, 4), Color("f5d72c"))
-			img.fill_rect(Rect2i(x, 12, 2, 8), Color("e3c623"))
+		var arquivos = [5,3,2,4,1]
+		var textura = load("res://assets/chips/chips_%d.png" % arquivos[chip]) as Texture2D
+		var desenho = textura.get_image()
+		var recorte = desenho.get_used_rect()
+		desenho = desenho.get_region(recorte)
+		var fator = minf(20.0/desenho.get_width(),24.0/desenho.get_height())
+		desenho.resize(maxi(1,roundi(desenho.get_width()*fator)),maxi(1,roundi(desenho.get_height()*fator)),Image.INTERPOLATE_NEAREST)
+		img.blit_rect(desenho,Rect2i(Vector2i.ZERO,desenho.get_size()),(img.get_size()-desenho.get_size())/2)
 	return ImageTexture.create_from_image(img)
 

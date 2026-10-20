@@ -83,6 +83,7 @@ func _formatar_tempo(segundos: float) -> String:
 	return "%02d:%02d" % [floori(float(total) / 60.0), total % 60]
 
 func tocar_musica(tipo: String) -> void:
+	if not is_inside_tree() or not is_instance_valid(musica) or not musica.is_inside_tree(): return
 	var faixa: AudioStreamMP3 = MUSICAS.get(tipo, MUSICAS["normal"])
 	if faixa_solicitada == faixa: return
 	faixa_solicitada = faixa
@@ -106,6 +107,7 @@ func _criar_fade_musica(volume_alvo: float) -> Tween:
 	return tween
 
 func _iniciar_faixa(faixa: AudioStreamMP3) -> void:
+	if not is_inside_tree() or not is_instance_valid(musica) or not musica.is_inside_tree(): return
 	faixa.loop = true
 	musica.stream = faixa
 	musica.volume_db = VOLUME_FADE_MUSICA

@@ -77,14 +77,6 @@ func comprar(indice: int) -> String:
 	jogador.melhorias_alteradas.emit()
 	return "Cura aplicada: +1 PV." if indice == -1 else "Chip comprado! Equipe no pause > Melhorias."
 
-func vender(indice: int) -> String:
-	if papel != "vendedor" or not perto(): return "Aproxime-se do comerciante."
-	if indice < 0 or indice >= estoque.size(): return "Item inválido."
-	if jogador.inventario[indice] <= jogador.equipados.count(indice): return "Sem chip livre. Remova-o dos equipamentos antes de vender."
-	jogador.inventario[indice] -= 1
-	jogador.coletar_drop({"tipo":"moeda","quantidade":maxi(1,precos[indice]/2)})
-	return "Chip vendido."
-
 func atender() -> String:
 	if not perto(): return "Aproxime-se para conversar."
 	if servico_usado: return "Já te ajudei neste setor. Encontre-me no próximo!"
